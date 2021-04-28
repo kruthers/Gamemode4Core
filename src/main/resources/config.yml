@@ -1,0 +1,63 @@
+# ######### #
+# Gamemode 4 Core
+# Version ${project.version} #
+# by kruthers
+# ######### #
+# query kruthers#7770 on discord for any config help
+buildmode:
+  group: builder
+streamer_mode:
+  group: staff_notifcations
+stored_locations:
+  back: 10
+spawn:
+  player:
+    world: world
+    x: 0
+    y: 64
+    z: 0
+    pitch: 0
+    yaw: 0
+  entities:
+    world: world
+    x: 0
+    y: 64
+    z: 0
+scoreboard:
+  tracked: []
+server_config:
+  motd: |
+    &b&lGamemode 4 &7- &6&lPublic Server &c[1.16.5]
+    &2     Now Open to the public! &3Come Play!
+messages:
+  prefix: '&3[&bGM4&3]&7'
+  default_not_whitelisted: 'Sorry you are not whitelist on this server'
+  freeze:
+    start_brodcast: |
+      &8------- &4Warning &8-------
+      &3Everyone has been temporarily frozen in place to help the staff resolve an issue.
+      &bPlease be patient and remain still while the issue is being resolved
+      &8------- ------ -------
+    end_brodcast: |
+      &8------- &2Warning &8-------
+      &3Everyone has been release, you are free to move arround again
+      &bPlease be carefull and report any issues
+      &8------- ------ -------'
+    staff_start: '&e[STAFF] &b{name} &6Has frozen everyone in place, run /unfreeze to release them'
+    staff_end: '&e[STAFF] &b{name} &6Has unfrozen everyone'
+    fozen: '{prefix} &cSorry you cant move while all players are frozen. Please stand still while the mods work to resolve the issue'
+  buildmode:
+    enter: '{prefix} &aSuccessfully entered into build mode'
+    exit: '{prefix} &aExciting build mode...'
+    join: '{prefix} &6Reminder: you are currently in build mode and have your creative inventory'
+  watch:
+    start: '{prefix} &aYou are now watching &3{target}'
+    stop: '{prefix} &aYou are now longer watching anyone'
+    dimentionChange: '{prefix} $3{target} &5Has changed dimension do &d/watch confirm &5to follow them'
+    logout: '{prefix} &3{target} &cHas left the game run &4/watch confirm &cto view where they left'
+    join_online: '{prefix} &3{target} &aIs online do &2/watch confirm &ato continue watching them'
+    join_offline: '{prefix} &cYour watch target: &3{target} &cIs not currently logged'
+  streammode:
+    enter: '{prefix} &cYou are now in streamer mode and will not receive staff notifications, run &4/streammode &cto exit'
+    exit: '{prefix} &aYou are no longer in streamer mode and will receive staff notifications. &lMake sure you are not currently showing you chat to non staff members. &aTo enter it again run &2/streammode'
+    join: '{prefix} &6Reminder: you are currently in streamer mode so will not receive staff notifications. it is staff to allow non-staff to see your chat'

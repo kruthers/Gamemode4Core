@@ -1,0 +1,106 @@
+name: ${project.artifactId}
+version: ${project.version}
+main: com.kruthers.gamemode4core.Gamemode4Core
+api-version: 1.16
+author: kruthers
+description: ${project.description}
+depend:
+  - ProtocolLib
+  - Vault
+softdepend:
+  - Dynmap
+  - PlaceholderAPI
+permissions:
+  gm4core.default:
+    default: true
+    description: used to run the default command
+  gm4core.reload:
+    default: false
+    description: Used to reload the plugin
+  gm4core.whitelist:
+    default: op
+    description: Used for basic managment of the whitelist command
+  gm4core.whitelist.players:
+    default: false
+    description: used to add/ remove people from a whitelist
+  gm4core.whitelist.manage:
+    default: false
+    description: used to add/ remove whitelists
+  gm4core.whitelist.enable:
+    default: false
+    description: Used to set the active whitelist
+  gm4core.mode.streamer:
+    default: op
+    description: Allows you to go into streamer mode and disable notifcations
+  gm4core.mode.build:
+    default: op
+    description: Allows you to go into build mode
+  gm4core.mode.watch:
+    default: op
+    description: Go watch people to modderate them
+  gm4core.tpa:
+    default: op
+    description: tpa to locations or people
+  gm4core.tpa.back:
+    default: op
+    description: go back to privous locations
+  gm4core.tpa.forward:
+    default: op
+    description: go forward to a back location
+  gm4core.freeze:
+    default: op
+    description: Freeze everyone on the server
+  gm4core.freeze.byspass:
+    default: op
+    description: Bypass getting frozen
+  gm4core.freeze.notify:
+    default: op
+    description: Get notified seperatly when a freeze is started and of who started it
+commands:
+  gamemode4core:
+    description: Core command for the plugin
+    usage: /<command> <reload|rules|info>
+    aliases:
+      - gm4
+      - gamemode4
+      - gm4core
+  whitelist:
+    description: Used to manage the custom whitelist system
+    usage: /<command> <add|remove|create|delete|info|modify|set> <whitelist>
+    permission: gm4core.whitelist
+  streammode:
+    description: Used to hide all staff notifcations
+    usage: /<command>
+    permission: gm4core.mode.streamer
+  buildmode:
+    description: Used to enter build mode and gain world edit perms
+    usage: /<command>
+    permission: gm4core.mode.build
+  watch:
+    description: Used to enter watch mode and watch people
+    usage: /<command> <player>
+    permission: gm4core.mode.watch
+  watchconfirm:
+    description: teleport to your target
+    usage: /<command>
+    permission: gm4core.mode.watch
+  unwatch:
+    description: Used to exit watch mode
+    usage: /<command>
+    permission: gm4core.mode.watch
+  tpa:
+    description: tpa to locations and remeber your to history
+    usage: /<command> <pos|player>
+    permission: gm4core.tpa
+  back:
+    description: Go back to your privous location
+    usage: /<command> [count]
+    permission: gm4core.tpa.back
+  freeze:
+    description: Freeze everyone on the server for a set time
+    usage: /<command> <time>
+    permission: gm4core.freeze
+  unfreeze:
+    description: Unfreeze everyone
+    usage: /<command>
+    permission: gm4core.freeze
