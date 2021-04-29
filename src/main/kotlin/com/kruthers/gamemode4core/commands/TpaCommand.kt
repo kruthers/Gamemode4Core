@@ -130,7 +130,7 @@ class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
     }
 
     private fun addLocation(player: Player) {
-        var locations: MutableList<Location> = Gamemode4Core.backLocations[player] ?: mutableListOf()
+        var locations: MutableList<Location> = Gamemode4Core.backLocations[player.uniqueId] ?: mutableListOf()
 
         locations.add(0,player.location)
 
@@ -138,12 +138,12 @@ class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
             locations = locations.subList(0,plugin.config.getInt("stored_locations.back"))
         }
 
-        Gamemode4Core.backLocations[player] = locations
+        Gamemode4Core.backLocations[player.uniqueId] = locations
 
     }
 
     private fun getLocations(player: Player): Int {
-        val locations: MutableList<Location> = Gamemode4Core.backLocations[player] ?: mutableListOf()
+        val locations: MutableList<Location> = Gamemode4Core.backLocations[player.uniqueId] ?: mutableListOf()
 
         return locations.size
     }

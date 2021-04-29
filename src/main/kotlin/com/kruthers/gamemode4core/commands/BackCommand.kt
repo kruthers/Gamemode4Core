@@ -26,7 +26,7 @@ class BackCommand(val plugin: Gamemode4Core): CommandExecutor {
 
             when (args.size) {
                 0 -> {
-                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player]
+                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
                     if (locations == null) {
                         player.sendMessage("${ChatColor.RED}You have no where to return too")
                     } else {
@@ -38,7 +38,7 @@ class BackCommand(val plugin: Gamemode4Core): CommandExecutor {
                     }
                 }
                 1 -> {
-                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player]
+                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
                     if (locations == null) {
                         player.sendMessage("${ChatColor.RED}You have no where to return too")
                     } else {
@@ -76,16 +76,16 @@ class BackCommand(val plugin: Gamemode4Core): CommandExecutor {
     }
 
     private fun removeLocations(player: Player, count: Int): Int {
-        var locations: MutableList<Location> = Gamemode4Core.backLocations[player] ?: mutableListOf()
+        var locations: MutableList<Location> = Gamemode4Core.backLocations[player.uniqueId] ?: mutableListOf()
 
 
         val remaining: Int = locations.size - count
         if (remaining < 1) {
-            Gamemode4Core.backLocations.remove(player)
+            Gamemode4Core.backLocations.remove(player.uniqueId)
             return 0
         } else {
             locations = locations.subList(count,locations.size)
-            Gamemode4Core.backLocations[player] = locations
+            Gamemode4Core.backLocations[player.uniqueId] = locations
         }
 
         return remaining

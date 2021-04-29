@@ -34,7 +34,7 @@ class Gamemode4Core(): JavaPlugin() {
         var playersFrozen: Boolean = false
         val whitelists: HashMap<String, Whitelist> = HashMap()
         val watchingPlayers: HashMap<Player,UUID> = HashMap();
-        val backLocations: HashMap<Player,MutableList<Location>> = HashMap()
+        val backLocations: HashMap<UUID,MutableList<Location>> = HashMap()
 
         var activeWhitelist: String = ""
 
