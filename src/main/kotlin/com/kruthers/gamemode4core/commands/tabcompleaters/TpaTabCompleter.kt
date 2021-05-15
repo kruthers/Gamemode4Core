@@ -25,7 +25,7 @@ class TpaTabCompleter: TabCompleter {
                 1 -> {
                     val arg: String = args[0]
                     Bukkit.getOnlinePlayers().forEach {
-                        if (player != it && player.name.toLowerCase().contains(arg.toLowerCase())) {
+                        if (player.uniqueId != it.uniqueId && it.name.toLowerCase().contains(arg.toLowerCase())) {
                             options.add(player.name)
                         }
                     }

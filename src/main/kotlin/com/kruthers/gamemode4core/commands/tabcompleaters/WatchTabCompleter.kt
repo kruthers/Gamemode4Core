@@ -17,15 +17,15 @@ class WatchTabCompleter: TabCompleter {
         } else if (args.size == 1) {
             val arg: String = args[0]
             Bukkit.getOnlinePlayers().forEach {
-                if (it != sender) {
+                if (it.name != sender.name) {
                     val name: String = it.name
-                    if (name.contains(arg)) {
+                    if (name.toLowerCase().contains(arg.toLowerCase())) {
                         options.add(name)
                     }
                 }
             }
         }
 
-        return options;
+        return options
     }
 }

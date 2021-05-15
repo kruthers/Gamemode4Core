@@ -18,7 +18,7 @@ permissions:
     default: false
     description: Used to reload the plugin
   gm4core.whitelist:
-    default: op
+    default: false
     description: Used for basic managment of the whitelist command
   gm4core.whitelist.players:
     default: false
@@ -64,7 +64,7 @@ commands:
       - gm4
       - gamemode4
       - gm4core
-  whitelist:
+  gm4whitelist:
     description: Used to manage the custom whitelist system
     usage: /<command> <add|remove|create|delete|info|modify|set> <whitelist>
     permission: gm4core.whitelist
