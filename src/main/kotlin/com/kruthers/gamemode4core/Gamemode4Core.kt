@@ -2,10 +2,7 @@ package com.kruthers.gamemode4core
 
 import com.kruthers.gamemode4core.commands.*
 import com.kruthers.gamemode4core.commands.tabcompleaters.*
-import com.kruthers.gamemode4core.events.DimensionEvents
-import com.kruthers.gamemode4core.events.PlayerConnectionEvents
-import com.kruthers.gamemode4core.events.PlayerFrozenEvents
-import com.kruthers.gamemode4core.events.StatusEvent
+import com.kruthers.gamemode4core.events.*
 import com.kruthers.gamemode4core.objects.Whitelist
 import com.kruthers.gamemode4core.utils.initStorageFolders
 import com.kruthers.gamemode4core.utils.loadWhitelists
@@ -129,6 +126,7 @@ class Gamemode4Core(): JavaPlugin() {
         this.server.pluginManager.registerEvents(PlayerFrozenEvents(this), this)
         this.server.pluginManager.registerEvents(DimensionEvents(this), this)
         this.server.pluginManager.registerEvents(StatusEvent(this), this)
+        this.server.pluginManager.registerEvents(PlayerRespawnEvent(this),this)
 
         this.logger.info("Loaded events")
         this.server.consoleSender.sendMessage("${ChatColor.GREEN}Gamemode 4 Core is now loaded in and ready to go")

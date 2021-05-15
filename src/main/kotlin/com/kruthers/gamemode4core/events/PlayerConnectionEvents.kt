@@ -23,11 +23,34 @@ import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Score
 import java.util.*
 
-class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
+class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
     private val tagPrefix: String = "\u1747gm4Core_"
 
     //regex
     private val usernameRegex: Regex = Regex("${tagPrefix}username_([\\w_]{3,16})")
+
+
+    companion object {
+        fun getConfigSpawn(plugin: Gamemode4Core): Location {
+            val config: FileConfiguration = plugin.config
+
+            val x: Double = config.getDouble("spawn.x")
+            val y: Double = config.getDouble("spawn.y")
+            val z: Double = config.getDouble("spawn.z")
+
+            val pitch: Float = config.getDouble("spawn.pitch").toFloat()
+            val yaw: Float = config.getDouble("spawn.yaw").toFloat()
+
+            val worldName: String = config.getString("spawn.world").toString()
+            var world: World? = Bukkit.getWorld(worldName)
+            if (world == null) {
+                world = Bukkit.getWorlds()[0]
+            }
+
+            return Location(world,x,y,z,yaw,pitch)
+        }
+    }
+
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
@@ -36,7 +59,7 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
         //Gives them a tag containing there current username to monitor for changes
         if (!player.hasPlayedBefore()) {
             // player has not played before so just gives them the tag it will also handel first join events
-            val location: Location = getPlayerSpawn();
+            val location: Location = getConfigSpawn(plugin);
             player.setBedSpawnLocation(location,true)
             player.teleport(location)
 
@@ -65,7 +88,7 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
 
                     //TODO check if works
                     //Now will parse all the scoreboards that are tracked and copy the scores over
-                    val scoreboards: MutableList<String> = pl.config.getStringList("scoreboard.tracked")
+                    val scoreboards: MutableList<String> = plugin.config.getStringList("scoreboard.tracked")
                     scoreboards.forEach {
                         val scoreboard: Objective? = Bukkit.getServer().scoreboardManager?.mainScoreboard?.getObjective(it)
                         val score: Score? = scoreboard?.getScore(username)
@@ -78,16 +101,16 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
 
         // This handels players using watch, build and stream mode.
         //first checks if they have any data
-        if (playerHasData(pl, player)) {
+        if (playerHasData(plugin, player)) {
             //if they have saved data they will load it and check for diffrent modes
-            val playerData: YamlConfiguration = loadPlayerData(pl, player)
+            val playerData: YamlConfiguration = loadPlayerData(plugin, player)
 
             //if stream mode is enabled it will send a reminder as long as they still have perms
             if (playerData.getBoolean("mode.streamer")) {
                 if (player.hasPermission("gm4core.mode.streamer")) {
-                    player.sendMessage(getMessage(pl, "streammode.join"))
+                    player.sendMessage(getMessage(plugin, "streammode.join"))
                 } else {
-                    StreamerMode.toggle(pl,player)
+                    StreamerMode.toggle(plugin,player)
                 }
             }
 
@@ -95,10 +118,10 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
             when (playerData.getString("mode.current")) {
                 "build" -> {
                     if (player.hasPermission("gm4core.mode.build")) {
-                        player.sendMessage(getMessage(pl, "buildmode.join", player))
+                        player.sendMessage(getMessage(plugin, "buildmode.join", player))
                         Gamemode4Core.buildBossBar.addPlayer(player)
                     } else {
-                        BuildMode.disable(pl, player, playerData, true);
+                        BuildMode.disable(plugin, player, playerData, true);
                     }
                 }
                 "watch" -> {
@@ -108,16 +131,16 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
                         if (targetUUID != null) {
                             val target: OfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(targetUUID))
                             if (target.isOnline) {
-                                player.sendMessage(getMessage(pl, "watch.join_online").replace("{target}", target.name!!))
+                                player.sendMessage(getMessage(plugin, "watch.join_online").replace("{target}", target.name!!))
                             } else {
-                                player.sendMessage(getMessage(pl, "watch.join_offline").replace("{target}", target.name!!))
+                                player.sendMessage(getMessage(plugin, "watch.join_offline").replace("{target}", target.name!!))
                             }
                             Gamemode4Core.watchingPlayers[player] = UUID.fromString(targetUUID)
                         } else {
-                            Watcher.disable(pl, player, playerData, true)
+                            Watcher.disable(plugin, player, playerData, true)
                         }
                     } else {
-                        Watcher.disable(pl, player, playerData, true);
+                        Watcher.disable(plugin, player, playerData, true);
                     }
                 }
             }
@@ -141,7 +164,7 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
             // if they are it will send a message to the watcher informing them
             Gamemode4Core.watchingPlayers.forEach { watcher, target ->
                 if (target == player.uniqueId) {
-                    watcher.sendMessage(getMessage(pl,"watch.logout",watcher).replace("{target}",player.name))
+                    watcher.sendMessage(getMessage(plugin,"watch.logout",watcher).replace("{target}",player.name))
                 }
             }
         }
@@ -150,26 +173,6 @@ class PlayerConnectionEvents(val pl: Gamemode4Core): Listener {
         if (Gamemode4Core.watchingPlayers.keys.contains(player)) {
             Gamemode4Core.watchingPlayers.remove(player)
         }
-    }
-
-
-    private fun getPlayerSpawn(): Location {
-        val config: FileConfiguration = pl.config
-
-        val x: Double = config.getDouble("spawn.player.x")
-        val y: Double = config.getDouble("spawn.player.y")
-        val z: Double = config.getDouble("spawn.player.z")
-
-        val pitch: Float = config.getDouble("spawn.player.pitch").toFloat()
-        val yaw: Float = config.getDouble("spawn.player.yaw").toFloat()
-
-        val worldName: String = config.getString("spawn.player.world").toString()
-        var world: World? = Bukkit.getWorld(worldName)
-        if (world == null) {
-            world = Bukkit.getWorlds()[0]
-        }
-
-        return Location(world,x,y,z,yaw,pitch)
     }
 
 }

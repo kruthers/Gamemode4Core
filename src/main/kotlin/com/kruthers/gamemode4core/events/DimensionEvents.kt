@@ -2,9 +2,14 @@ package com.kruthers.gamemode4core.events
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.getMessage
+import org.bukkit.Bukkit
+import org.bukkit.World
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.entity.EntityPortalEvent
+import org.bukkit.event.entity.EntityPortalExitEvent
+import org.bukkit.event.entity.EntityTeleportEvent
 import org.bukkit.event.player.PlayerTeleportEvent
 
 class DimensionEvents(val plugin: Gamemode4Core): Listener {
@@ -23,6 +28,14 @@ class DimensionEvents(val plugin: Gamemode4Core): Listener {
                 }
             }
 
+        }
+    }
+
+    //Item Teleportation
+    @EventHandler
+    fun onEntityDimensionChange(event: EntityPortalEvent) {
+        if (event.from.world?.environment == World.Environment.THE_END) {
+            event.to = PlayerConnectionEvents.getConfigSpawn(plugin)
         }
     }
 

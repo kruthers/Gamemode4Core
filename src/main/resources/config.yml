@@ -11,18 +11,12 @@ streamer_mode:
 stored_locations:
   back: 10
 spawn:
-  player:
-    world: world
-    x: 0
-    y: 64
-    z: 0
-    pitch: 0
-    yaw: 0
-  entities:
-    world: world
-    x: 0
-    y: 64
-    z: 0
+  world: world
+  x: 0
+  y: 64
+  z: 0
+  pitch: 0
+  yaw: 0
 scoreboard:
   tracked: []
 server_config:
