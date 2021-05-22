@@ -43,7 +43,7 @@ class StreamerMode {
 
             val group: String? = plugin.config.getString("streamer_mode.group")
             if (Gamemode4Core.permission.groups.contains(group)) {
-                playerData.set("mode.streamer",true)
+                playerData.set("mode.streamer",false)
                 playerRemoveGroup(player, group)
                 player.sendMessage(getMessage(plugin,"streammode.exit"))
             } else {
