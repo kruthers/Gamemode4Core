@@ -1,9 +1,9 @@
 package com.kruthers.gamemode4core.events
 
 import com.kruthers.gamemode4core.Gamemode4Core
-import com.kruthers.gamemode4core.modes.BuildMode
+import com.kruthers.gamemode4core.modes.ModMode
 import com.kruthers.gamemode4core.modes.StreamerMode
-import com.kruthers.gamemode4core.modes.Watcher
+import com.kruthers.gamemode4core.modes.Watching
 import com.kruthers.gamemode4core.utils.getMessage
 import com.kruthers.gamemode4core.utils.loadPlayerData
 import com.kruthers.gamemode4core.utils.playerHasData
@@ -80,7 +80,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                 // -> username is not saved, so will just add the tag
                 player.addScoreboardTag("${tagPrefix}username_${player.name}")
             } else {
-                // -> username is found, will check if it maches there current username
+                // -> username is found, will check if it matches there current username
                 if (username != player.name) {
                     // -> if it does not match it will remove it and add a new tag with the update name
                     player.addScoreboardTag("${tagPrefix}username_${player.name}")
@@ -114,34 +114,33 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                 }
             }
 
-            //the other modes can only have 1 enabled so it will just check which one (if any) is enabled and send reminders
-            when (playerData.getString("mode.current")) {
-                "build" -> {
-                    if (player.hasPermission("gm4core.mode.build")) {
-                        player.sendMessage(getMessage(plugin, "buildmode.join", player))
-                        Gamemode4Core.buildBossBar.addPlayer(player)
-                    } else {
-                        BuildMode.disable(plugin, player, playerData, true);
+            //mod mode
+            if (playerData.getBoolean("mode.mod_mode")) {
+                if (player.hasPermission("gm4core.mode.mod")) {
+                    player.sendMessage(getMessage(plugin, "mod_mode.join"))
+
+                    if (!Gamemode4Core.modModeBossBar.players.contains(player)) {
+                        Gamemode4Core.modModeBossBar.players.add(player)
                     }
+
+                } else {
+                    ModMode.disable(plugin,player,playerData)
                 }
-                "watch" -> {
-                    if (player.hasPermission("gm4core.mode.watch")) {
-                        // get the uuid of the player being watched and check if they are online or not (sends different messages)
-                        val targetUUID: String? = playerData.getString("storage.watch.target")
-                        if (targetUUID != null) {
-                            val target: OfflinePlayer = Bukkit.getOfflinePlayer(UUID.fromString(targetUUID))
-                            if (target.isOnline) {
-                                player.sendMessage(getMessage(plugin, "watch.join_online").replace("{target}", target.name!!))
-                            } else {
-                                player.sendMessage(getMessage(plugin, "watch.join_offline").replace("{target}", target.name!!))
-                            }
-                            Gamemode4Core.watchingPlayers[player] = UUID.fromString(targetUUID)
-                        } else {
-                            Watcher.disable(plugin, player, playerData, true)
-                        }
+            }
+
+            //watch mode
+            if (playerData.getBoolean("mode.watching")) {
+                if (player.hasPermission("gm4core.mode.watch")) {
+                    val target: OfflinePlayer? = playerData.getString("storage.watching.target")?.let { Bukkit.getOfflinePlayer(UUID.fromString(it)) }
+
+                    if (target == null) {
+                        Watching.disable(plugin, player, playerData)
                     } else {
-                        Watcher.disable(plugin, player, playerData, true);
+                        player.sendMessage(getMessage(plugin, "watch.join").replace("{target}",target.name?:"null"))
+                        Gamemode4Core.watchingPlayers[player] = target.uniqueId
                     }
+                } else {
+                    ModMode.disable(plugin,player,playerData)
                 }
             }
         }

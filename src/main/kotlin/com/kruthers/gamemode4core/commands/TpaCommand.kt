@@ -20,7 +20,7 @@ class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
             val player: Player = sender
 
             val playerData: YamlConfiguration = loadPlayerData(plugin, player)
-            if (playerData.getString("mode.current") != "none") {
+            if (playerData.getBoolean("mode.mod_mode")) {
                 player.sendMessage("${ChatColor.RED}Sorry you cant use tpa when in a mode currently, try using build mode and normal tping")
                 return true
             }

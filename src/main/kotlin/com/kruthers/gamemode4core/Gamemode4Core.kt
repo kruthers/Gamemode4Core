@@ -4,8 +4,8 @@ import com.kruthers.gamemode4core.commands.*
 import com.kruthers.gamemode4core.commands.tabcompleaters.*
 import com.kruthers.gamemode4core.events.*
 import com.kruthers.gamemode4core.objects.Whitelist
+import com.kruthers.gamemode4core.utils.configVersionCheck
 import com.kruthers.gamemode4core.utils.initStorageFolders
-import com.kruthers.gamemode4core.utils.loadWhitelists
 import net.md_5.bungee.api.ChatColor
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
@@ -21,11 +21,13 @@ import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
 import org.dynmap.DynmapAPI
 import java.util.*
-import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
-import kotlin.collections.HashSet
 
 class Gamemode4Core(): JavaPlugin() {
+
+    /** TODO
+     * - Track watch targets
+     */
 
     companion object {
         var playersFrozen: Boolean = false
@@ -35,7 +37,7 @@ class Gamemode4Core(): JavaPlugin() {
 
         var activeWhitelist: String = ""
 
-        lateinit var buildBossBar: BossBar
+        lateinit var modModeBossBar: BossBar
 
         lateinit var permission: Permission
         lateinit var dynmapAPI: DynmapAPI
@@ -75,6 +77,9 @@ class Gamemode4Core(): JavaPlugin() {
 
         this.logger.info("Loading config...")
         this.config.options().copyDefaults(true)
+        //check if storage files need updating
+        configVersionCheck(this,config)
+
         this.saveConfig()
 
         this.logger.info("Config successfully loaded, loading in all data files...")
@@ -85,22 +90,24 @@ class Gamemode4Core(): JavaPlugin() {
         }
 
 
-        loadWhitelists(this)
+
+
+//        loadWhitelists(this)
 
         this.logger.info("Loaded data files, loading in scoreboard & bossbars...")
-        buildBossBar = Bukkit.getServer().createBossBar(NamespacedKey.fromString("buildmode",this)!!,"${ChatColor.GOLD}Build Mode is engaged",BarColor.RED,BarStyle.SOLID)
-        buildBossBar.isVisible = true;
-        buildBossBar.progress = 1.0
+        modModeBossBar = Bukkit.getServer().createBossBar(NamespacedKey.fromString("mode_mode",this)!!,"${ChatColor.GREEN}${ChatColor.BOLD}Mod Mode is engaged",BarColor.YELLOW,BarStyle.SOLID)
+        modModeBossBar.isVisible = true;
+        modModeBossBar.progress = 1.0
 
         this.logger.info("Loaded scoreboard and bossbar data, registering commands...")
         val comingSoon: CommandExecutor = ComingSoon();
         this.server.getPluginCommand("gamemode4core")?.setExecutor( CoreCommand(this) )
         this.server.getPluginCommand("whitelist")?.setExecutor( comingSoon ) //TODO
         this.server.getPluginCommand("streammode")?.setExecutor( StreamerModeCommand(this) )
-        this.server.getPluginCommand("buildmode")?.setExecutor( BuildModeCommand(this) )
+        this.server.getPluginCommand("modmode")?.setExecutor( ModModeCommand(this) )
         this.server.getPluginCommand("watch")?.setExecutor( WatchCommand(this) )
+        this.server.getPluginCommand("unwatch")?.setExecutor( UnwatchCommand(this) )
         this.server.getPluginCommand("watchconfirm")?.setExecutor( WatchConfirmCommand(this) )
-        this.server.getPluginCommand("unwatch")?.setExecutor( UnWatchCommand(this) )
         this.server.getPluginCommand("tpa")?.setExecutor( TpaCommand(this) )
         this.server.getPluginCommand("back")?.setExecutor( BackCommand(this) )
         this.server.getPluginCommand("freeze")?.setExecutor( FreezeCommand(this) )
@@ -111,10 +118,10 @@ class Gamemode4Core(): JavaPlugin() {
         this.server.getPluginCommand("gamemode4core")?.tabCompleter = CoreCommandTabCompleter()
 //        this.server.getPluginCommand("whitelist")?.tabCompleter = WhitelistTabCompleter()
         this.server.getPluginCommand("streammode")?.tabCompleter = nullTabCompleter
-        this.server.getPluginCommand("buildmode")?.tabCompleter = nullTabCompleter
+        this.server.getPluginCommand("modmode")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("watch")?.tabCompleter = WatchTabCompleter()
-        this.server.getPluginCommand("watchconfirm")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("unwatch")?.tabCompleter = nullTabCompleter
+        this.server.getPluginCommand("watchconfirm")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("tpa")?.tabCompleter = TpaTabCompleter()
         this.server.getPluginCommand("back")?.tabCompleter = nullTabCompleter
 //        this.server.getPluginCommand("forward")?.tabCompleter = nullTabCompleter
@@ -127,6 +134,7 @@ class Gamemode4Core(): JavaPlugin() {
         this.server.pluginManager.registerEvents(DimensionEvents(this), this)
         this.server.pluginManager.registerEvents(StatusEvent(this), this)
         this.server.pluginManager.registerEvents(PlayerRespawnEvent(this),this)
+        this.server.pluginManager.registerEvents(TimeEvents(this),this)
 
         this.logger.info("Loaded events")
         this.server.consoleSender.sendMessage("${ChatColor.GREEN}Gamemode 4 Core is now loaded in and ready to go")
@@ -136,7 +144,7 @@ class Gamemode4Core(): JavaPlugin() {
 
     override fun onDisable() {
         this.logger.info("Disabling Gamemode 4 core")
-        Bukkit.getServer().removeBossBar(NamespacedKey.fromString("buildmode",this)!!)
+        Bukkit.getServer().removeBossBar(NamespacedKey.fromString("mode_mode",this)!!)
 
 
         this.server.consoleSender.sendMessage("${ChatColor.RED}Gamemode 4 Core is now disabled")

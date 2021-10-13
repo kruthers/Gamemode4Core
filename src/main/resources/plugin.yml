@@ -32,21 +32,27 @@ permissions:
   gm4core.mode.streamer:
     default: op
     description: Allows you to go into streamer mode and disable notifcations
-  gm4core.mode.build:
-    default: op
-    description: Allows you to go into build mode
   gm4core.mode.watch:
     default: op
-    description: Go watch people to modderate them
+    description: Allows you to go into streamer mode and disable notifcations
+    children:
+      - gm4core.mode.mod
+  gm4core.mode.mod:
+    default: op
+    description: Allows you to go into mod mode
   gm4core.tpa:
     default: op
     description: tpa to locations or people
   gm4core.tpa.back:
     default: op
     description: go back to privous locations
+    children:
+      - gm4core.tpa
   gm4core.tpa.forward:
     default: op
     description: go forward to a back location
+    children:
+      - gm4core.tpa
   gm4core.freeze:
     default: op
     description: Freeze everyone on the server
@@ -66,31 +72,33 @@ commands:
       - gm4core
   gm4whitelist:
     description: Used to manage the custom whitelist system
-    usage: /<command> <add|remove|create|delete|info|modify|set> <whitelist>
+    usage: /<command> (add|remove|create|delete|info|modify|set) <whitelist> ...
     permission: gm4core.whitelist
   streammode:
     description: Used to hide all staff notifcations
     usage: /<command>
     permission: gm4core.mode.streamer
-  buildmode:
-    description: Used to enter build mode and gain world edit perms
+  modmode:
+    description: Used to enter moderation mode and gain world edit perms
     usage: /<command>
-    permission: gm4core.mode.build
+    permission: gm4core.mode.mod
+    aliases:
+      - buildmode
   watch:
-    description: Used to enter watch mode and watch people
+    description: Used to teleport to a player and go into spectator mode
     usage: /<command> <player>
     permission: gm4core.mode.watch
   watchconfirm:
-    description: teleport to your target
+    description: Used to teleport to the currently watched player
     usage: /<command>
     permission: gm4core.mode.watch
   unwatch:
-    description: Used to exit watch mode
+    description: Used to unwatch a player if you are watching them
     usage: /<command>
     permission: gm4core.mode.watch
   tpa:
     description: tpa to locations and remeber your to history
-    usage: /<command> <pos|player>
+    usage: /<command> <location>
     permission: gm4core.tpa
   back:
     description: Go back to your privous location
@@ -98,7 +106,7 @@ commands:
     permission: gm4core.tpa.back
   freeze:
     description: Freeze everyone on the server for a set time
-    usage: /<command> <time>
+    usage: /<command>
     permission: gm4core.freeze
   unfreeze:
     description: Unfreeze everyone

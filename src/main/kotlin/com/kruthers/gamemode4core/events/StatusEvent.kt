@@ -28,16 +28,16 @@ class StatusEvent(val plugin: Gamemode4Core): Listener {
 
             val noFormatting = Line.replace(this.formattingRegex,"")
 
-            if (noFormatting.length < this.motdLength) {
-                var spaces: Int = (this.motdLength-noFormatting.length)/2
-                while (spaces > 0) {
-                    parsedString = " $parsedString"
-                    spaces--
-                }
-
-            } else {
-                parsedString = parsedString.substring(0,this.motdLength)
-            }
+//            if (noFormatting.length < this.motdLength) {
+//                var spaces: Int = (this.motdLength-noFormatting.length)/2
+//                while (spaces > 0) {
+//                    parsedString = " $parsedString"
+//                    spaces--
+//                }
+//
+//            } else {
+//                parsedString = parsedString.substring(0,this.motdLength)
+//            }
 
             parsedString = ChatColor.translateAlternateColorCodes('&',parsedString)
 

@@ -1,7 +1,7 @@
 package com.kruthers.gamemode4core.commands
 
 import com.kruthers.gamemode4core.Gamemode4Core
-import com.kruthers.gamemode4core.modes.Watcher
+import com.kruthers.gamemode4core.modes.Watching
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.command.Command
@@ -23,7 +23,10 @@ class WatchCommand(val plugin: Gamemode4Core): CommandExecutor {
                     if (target == null) {
                         sender.sendMessage("${ChatColor.RED}Failed to find user $playerName")
                     } else {
-                        Watcher.enable(plugin,player,target)
+                        Watching.enable(plugin,player,target)
+
+                        Gamemode4Core.watchingPlayers[player] = target.uniqueId
+
                     }
                 } else {
                     player.sendMessage("${ChatColor.RED}Sorry, you cannot watch yourself")
