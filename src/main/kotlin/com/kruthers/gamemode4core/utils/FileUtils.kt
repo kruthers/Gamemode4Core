@@ -141,19 +141,19 @@ private fun updatePlayerDataFile(plugin: Gamemode4Core,playerDataFile: File) {
 
 fun configVersionCheck(plugin: Gamemode4Core,config: FileConfiguration) {
     val version: Int = config.getInt("config_version")
-    plugin.logger.warning("Outdated config version detected: $version")
+    if (File("${plugin.dataFolder}/config.yml").exists()) {
+        if (version < CONFIG_VERSION) {
+            plugin.logger.warning("Outdated config version detected: $version")
+            if (version < 1) {
+                plugin.logger.warning("Found an outdated config file, updating")
+                val playerDataFolder: File = File("${plugin.dataFolder}/player_data/")
+                val files = playerDataFolder.listFiles();
 
-    if (version < CONFIG_VERSION) {
-        if (version < 1) {
-            plugin.logger.warning("Found an outdated config file, updating")
-            val playerDataFolder: File = File("${plugin.dataFolder}/player_data/")
-            val files = playerDataFolder.listFiles();
-
-            files.forEach { file ->
-                updatePlayerDataFile(plugin,file)
+                files.forEach { file ->
+                    updatePlayerDataFile(plugin,file)
+                }
             }
         }
-
     }
 
     plugin.config.set("config_version", CONFIG_VERSION)

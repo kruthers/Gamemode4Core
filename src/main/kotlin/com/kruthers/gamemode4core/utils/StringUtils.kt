@@ -46,7 +46,7 @@ fun getMessage(plugin: Gamemode4Core, location: String, player: Player): String 
     val message: String? = plugin.config.getString("messages.$location")
 
     return if (message == null) {
-        "${ChatColor.RED}Error in parsing message: Failed to find message"
+        "${ChatColor.RED}Error in parsing message: Failed to find message messages.$location"
     } else {
         parsePlayerString(message, player, plugin)
     }

@@ -55,8 +55,9 @@ messages:
   watch:
     start: '{prefix} &aYou are now watching &3{target}'
     stop: '{prefix} &aYou are no longer watching anyone'
-    dimention_change: '{prefix} &3{target} &5Has changed dimension do &d/watchconfirm &5to follow them'
+    dimension_change: '{prefix} &3{target} &5Has changed dimension do &d/watchconfirm &5to follow them'
     join: '{prefix} &cYou are currently set to be watching &3{target}'
+    logout: '{prefix} Your target has left the game, you will be able to tp when they log back in'
   streammode:
     enter: '{prefix} &cYou are now in streamer mode and will not receive staff notifications, run &4/streammode &cto exit'
     exit: '{prefix} &aYou are no longer in streamer mode and will receive staff notifications. &lMake sure you are not currently showing you chat to non staff members. &aTo enter it again run &2/streammode'

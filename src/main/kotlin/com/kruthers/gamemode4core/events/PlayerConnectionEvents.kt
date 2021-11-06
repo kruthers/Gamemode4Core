@@ -6,6 +6,7 @@ import com.kruthers.gamemode4core.modes.StreamerMode
 import com.kruthers.gamemode4core.modes.Watching
 import com.kruthers.gamemode4core.utils.getMessage
 import com.kruthers.gamemode4core.utils.loadPlayerData
+import com.kruthers.gamemode4core.utils.parseString
 import com.kruthers.gamemode4core.utils.playerHasData
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
@@ -21,6 +22,7 @@ import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Score
+import java.lang.Exception
 import java.util.*
 
 class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
@@ -120,7 +122,11 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                     player.sendMessage(getMessage(plugin, "mod_mode.join"))
 
                     if (!Gamemode4Core.modModeBossBar.players.contains(player)) {
-                        Gamemode4Core.modModeBossBar.players.add(player)
+                        try {
+                            Gamemode4Core.modModeBossBar.players.add(player)
+                        } catch (e: Exception) {
+                            player.sendMessage(parseString("{prefix} ${ChatColor.RED}Failed to add player to boss bar",plugin))
+                        }
                     }
 
                 } else {

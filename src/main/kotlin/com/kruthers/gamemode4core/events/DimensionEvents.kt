@@ -23,7 +23,7 @@ class DimensionEvents(val plugin: Gamemode4Core): Listener {
             if (Gamemode4Core.watchingPlayers.values.contains(player.uniqueId)) {
                 Gamemode4Core.watchingPlayers.forEach { watcher, target ->
                     if (target == player.uniqueId) {
-                        watcher.sendMessage(getMessage(plugin,"messages.watch.dimention_change",watcher).replace("{target}",player.name))
+                        watcher.sendMessage(getMessage(plugin,"watch.dimension_change",watcher).replace("{target}",player.name))
                     }
                 }
             }

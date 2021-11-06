@@ -48,7 +48,6 @@ class Gamemode4Core(): JavaPlugin() {
 
     override fun onEnable() {
         this.logger.info("Enabling Gamemode 4 Core by kruthers")
-
         this.logger.info("Loading Required Dependencies")
         val pluginManager: PluginManager = this.getServer().getPluginManager();
         this.logger.info("Loading ProtocolLib")
@@ -88,9 +87,6 @@ class Gamemode4Core(): JavaPlugin() {
             server.pluginManager.disablePlugin(this)
             return
         }
-
-
-
 
 //        loadWhitelists(this)
 
