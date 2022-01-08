@@ -49,7 +49,7 @@ class Watching {
 
         }
 
-        fun disable(plugin: Gamemode4Core, player: Player, pd: YamlConfiguration): YamlConfiguration {
+        fun disable(plugin: Gamemode4Core, player: Player, pd: YamlConfiguration, disableModMode: Boolean): YamlConfiguration {
             var playerData: YamlConfiguration = pd;
             //set watching to false
             playerData.set("mode.watching",false);
@@ -70,7 +70,7 @@ class Watching {
             Gamemode4Core.watchingPlayers.remove(player)
 
             //check if they only entered mod mode to use watch mode
-            if (playerData.getBoolean("storage.watching.watchEntrance")) {
+            if (disableModMode && playerData.getBoolean("storage.watching.watchEntrance")) {
                 playerData = ModMode.disable(plugin,player,playerData)
             }
 
