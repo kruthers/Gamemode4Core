@@ -2,6 +2,7 @@ package com.kruthers.gamemode4core.commands
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.loadPlayerData
+import com.kruthers.gamemode4core.utils.parseString
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.Location
@@ -11,28 +12,21 @@ import org.bukkit.command.CommandExecutor
 import org.bukkit.command.CommandSender
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import java.lang.NumberFormatException
-import java.util.*
 
 class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
+
     override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
         if (sender is Player) {
             val player: Player = sender
-
-            val playerData: YamlConfiguration = loadPlayerData(plugin, player)
-            if (playerData.getBoolean("mode.mod_mode")) {
-                player.sendMessage("${ChatColor.RED}Sorry you cant use tpa when in a mode currently, try using build mode and normal tping")
-                return true
-            }
 
             when (args.size) {
                 1 -> {
                     val playerName: String = args[0]
                     val target: Player? = Bukkit.getPlayer(playerName)
                     if (target != null) {
-                        addLocation(player)
+                        plugin.addTPALocation(player)
                         player.teleport(target)
-                        sender.sendMessage("${ChatColor.GREEN}Successfully teleported to $playerName do /back to return to your last location")
+                        sender.sendMessage(parseString("{prefix} ${ChatColor.GREEN}Successfully teleported to $playerName do /back to return to your last location", plugin))
                     } else {
                         sender.sendMessage("${ChatColor.RED}Unable to find player $playerName")
                     }
@@ -113,7 +107,7 @@ class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
                     }
 
                     //save their current locations
-                    addLocation(player)
+                    plugin.addTPALocation(player)
 
                     //create the location and tp them
                     val location: Location = Location(world,x, y, z)
@@ -127,19 +121,6 @@ class TpaCommand(val plugin: Gamemode4Core): CommandExecutor {
         }
 
         return true
-    }
-
-    private fun addLocation(player: Player) {
-        var locations: MutableList<Location> = Gamemode4Core.backLocations[player.uniqueId] ?: mutableListOf()
-
-        locations.add(0,player.location)
-
-        if (locations.size > plugin.config.getInt("stored_locations.back")) {
-            locations = locations.subList(0,plugin.config.getInt("stored_locations.back"))
-        }
-
-        Gamemode4Core.backLocations[player.uniqueId] = locations
-
     }
 
     private fun getLocations(player: Player): Int {

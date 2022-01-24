@@ -23,8 +23,7 @@ class CoreCommand(val plugin:Gamemode4Core): CommandExecutor {
                     "info" -> sender.sendMessage(mainMessage)
                     "reload" -> {
                         plugin.reloadConfig()
-                        sender.sendMessage(parseString("{prefix} Reloaded GM4 Core Config & Whitelists",plugin))
-                        //TODO Reload whitelists
+                        sender.sendMessage(parseString("{prefix} Reloaded GM4 Core Config",plugin))
                     }
                     else -> invalidArg(sender)
                 }

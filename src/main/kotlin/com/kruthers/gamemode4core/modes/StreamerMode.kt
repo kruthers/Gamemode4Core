@@ -2,6 +2,7 @@ package com.kruthers.gamemode4core.modes
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.*
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -14,9 +15,9 @@ class StreamerMode {
             var playerData: YamlConfiguration = loadPlayerData(plugin, player)
 
             playerData = if (playerData.getBoolean("mode.streamer")) {
-                StreamerMode.disable(plugin, player, playerData)
+                disable(plugin, player, playerData)
             } else {
-                StreamerMode.enable(plugin, player, playerData)
+                enable(plugin, player, playerData)
             }
 
             playerData.save(getPlayerDataFile(plugin, player))
@@ -29,7 +30,9 @@ class StreamerMode {
             val group: String? = plugin.config.getString("streamer_mode.group")
             if (Gamemode4Core.permission.groups.contains(group)) {
                 playerData.set("mode.streamer",true)
-                playerAddGroup(player, group)
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+                    playerAddGroup(player, group)
+                })
                 player.sendMessage(getMessage(plugin,"streammode.enter"))
             } else {
                 player.sendMessage("${ChatColor.RED}Failed to find permissions group for notifications, unable to change mode. If this continues please inform you system admin")
@@ -44,7 +47,9 @@ class StreamerMode {
             val group: String? = plugin.config.getString("streamer_mode.group")
             if (Gamemode4Core.permission.groups.contains(group)) {
                 playerData.set("mode.streamer",false)
-                playerRemoveGroup(player, group)
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+                    playerRemoveGroup(player, group)
+                })
                 player.sendMessage(getMessage(plugin,"streammode.exit"))
             } else {
                 player.sendMessage("${ChatColor.RED}Failed to find permissions group for notifications, unable to change mode. If this continues please inform you system admin. (You are still in streamer mode)")

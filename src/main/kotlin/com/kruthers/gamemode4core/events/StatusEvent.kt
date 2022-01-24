@@ -26,8 +26,8 @@ class StatusEvent(val plugin: Gamemode4Core): Listener {
             var parsedString: String = Line.replace("{max}","${Bukkit.getServer().maxPlayers}")
             parsedString = parsedString.replace("{online}","${Bukkit.getServer().onlinePlayers.size}")
 
-            val noFormatting = Line.replace(this.formattingRegex,"")
-
+//            val noFormatting = Line.replace(this.formattingRegex,"")
+//
 //            if (noFormatting.length < this.motdLength) {
 //                var spaces: Int = (this.motdLength-noFormatting.length)/2
 //                while (spaces > 0) {

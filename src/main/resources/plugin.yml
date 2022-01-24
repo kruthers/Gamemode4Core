@@ -5,7 +5,6 @@ api-version: 1.16
 author: kruthers
 description: ${project.description}
 depend:
-  - ProtocolLib
   - Vault
 softdepend:
   - Dynmap
@@ -62,22 +61,25 @@ permissions:
   gm4core.freeze.notify:
     default: op
     description: Get notified seperatly when a freeze is started and of who started it
+  gm4core.warp:
+    default: op
+  gm4core.warp.manage:
+    default: op
+    children:
+      - gm4core.warp
 commands:
   gamemode4core:
     description: Core command for the plugin
     usage: /<command> <reload|rules|info>
     aliases:
       - gm4
-      - gamemode4
       - gm4core
-  gm4whitelist:
-    description: Used to manage the custom whitelist system
-    usage: /<command> (add|remove|create|delete|info|modify|set) <whitelist> ...
-    permission: gm4core.whitelist
   streammode:
     description: Used to hide all staff notifcations
     usage: /<command>
     permission: gm4core.mode.streamer
+    aliases:
+      - streamermode
   modmode:
     description: Used to enter moderation mode and gain world edit perms
     usage: /<command>
@@ -88,14 +90,20 @@ commands:
     description: Used to teleport to a player and go into spectator mode
     usage: /<command> <player>
     permission: gm4core.mode.watch
+    aliases:
+      - owo
   watchconfirm:
     description: Used to teleport to the currently watched player
     usage: /<command>
     permission: gm4core.mode.watch
+    aliases:
+      - wc
   unwatch:
     description: Used to unwatch a player if you are watching them
     usage: /<command>
     permission: gm4core.mode.watch
+    aliases:
+      - uwu
   tpa:
     description: tpa to locations and remeber your to history
     usage: /<command> <location>
@@ -112,3 +120,18 @@ commands:
     description: Unfreeze everyone
     usage: /<command>
     permission: gm4core.freeze
+  warp:
+    description: warp to a location
+    usage: /<command> [warp]
+    permission: gm4core.warp
+    aliases:
+      - warps
+  managewarp:
+    description: manage warps
+    usage: /<command>
+    permission: gm4core.warp.manage
+    aliases:
+      - addwarp
+      - setwarp
+      - removewarp
+      - modifywarp

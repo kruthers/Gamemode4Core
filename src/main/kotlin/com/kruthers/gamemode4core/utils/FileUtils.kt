@@ -1,78 +1,36 @@
 package com.kruthers.gamemode4core.utils
 
 import com.kruthers.gamemode4core.Gamemode4Core
+import com.kruthers.gamemode4core.commands.WarpCommand
 import com.kruthers.gamemode4core.events.PlayerConnectionEvents
-import com.kruthers.gamemode4core.objects.Whitelist
 import org.bukkit.Location
 import org.bukkit.configuration.file.FileConfiguration
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import java.io.File
-import java.lang.Exception
-import java.lang.IllegalArgumentException
-import java.util.*
 
-val CONFIG_VERSION = 3;
+const val CONFIG_VERSION = 3
 
 fun initStorageFolders(plugin: Gamemode4Core): Boolean {
-    val whitelistFolder: File = File("${plugin.dataFolder}/whitelists/")
-    val playerDataFolder: File = File("${plugin.dataFolder}/player_data/")
+    val playerDataFolder = File("${plugin.dataFolder}/player_data/")
 
-    var sucesful: Boolean = true
+    var sucesful = true
 
     if (!playerDataFolder.exists()) {
         plugin.logger.info("Failed to find player data folder, creating a new one")
         sucesful = playerDataFolder.mkdir()
     }
-    if (!whitelistFolder.exists()) {
-        plugin.logger.info("Failed to find whielists folder, creating a new one")
-        if (sucesful) {
-            sucesful = whitelistFolder.mkdir();
-        }
-    }
 
     return sucesful
 }
 
-fun loadWhitelists(plugin: Gamemode4Core) {
-    plugin.logger.info("Loading whitelists...")
-    val folder: File = File("${plugin.dataFolder}/whitelists/")
-    folder.listFiles()?.forEach {
-        val whitelistFile: YamlConfiguration = YamlConfiguration.loadConfiguration(it)
-
-        //parts
-        val name: String = it.name.removeSuffix(".yml")
-        plugin.logger.info("Found whitelist $name")
-        val rejectionMsg: String = whitelistFile.getString("rejection_msg") ?: "";
-        val uuids: MutableSet<UUID> = mutableSetOf()
-        val parents: MutableSet<String> = mutableSetOf()
-
-        whitelistFile.getStringList("players").forEach { uuid ->
-            uuids.add(UUID.fromString(uuid))
-        }
-
-        whitelistFile.getStringList("parents").forEach { parent ->
-            parents.add(parent)
-        }
-
-        val whitelist: Whitelist = Whitelist(name,uuids,parents,rejectionMsg)
-        Gamemode4Core.whitelists[name] = whitelist
-
-        if (whitelistFile.getBoolean("active")) {
-            plugin.logger.info("Set active whitelist as $name")
-            Gamemode4Core.activeWhitelist = name
-        }
-
-    }
-    plugin.logger.info("Fully loaded whitelists")
-}
 
 fun loadPlayerData(plugin: Gamemode4Core, player: Player): YamlConfiguration {
     val dataFile = getPlayerDataFile(plugin, player)
 
 
     return if (dataFile.exists()) {
-        YamlConfiguration.loadConfiguration(dataFile);
+        YamlConfiguration.loadConfiguration(dataFile)
     } else {
         generateBlankPlayerData()
     }
@@ -90,15 +48,12 @@ fun getPlayerDataFile(plugin: Gamemode4Core, player: Player): File {
 
 
 private fun generateBlankPlayerData(): YamlConfiguration {
-    val blankData: YamlConfiguration = YamlConfiguration();
+    val blankData = YamlConfiguration()
 
     //base data
     blankData.set("mode.streamer",false)
     blankData.set("mode.mod_mode",false)
     blankData.set("mode.watching",false)
-
-    //base mode data
-//    blankData.set("builddata.inventory",)
 
     return blankData;
 }
@@ -159,7 +114,34 @@ fun configVersionCheck(plugin: Gamemode4Core,config: FileConfiguration) {
     plugin.config.set("config_version", CONFIG_VERSION)
     plugin.saveConfig()
 
+}
+
+fun loadWarps(plugin: Gamemode4Core) {
+    val warpsFile = File("${plugin.dataFolder}/warps.yml")
+    val warpsData = YamlConfiguration.loadConfiguration(warpsFile)
+
+    val warps: Set<String> = warpsData.getConfigurationSection("warps")?.getKeys(false) ?: HashSet()
+    for (warp in warps) {
+        val location: Location? = warpsData.getLocation("warps.$warp")
+        if (location!= null) {
+            WarpCommand.warps[warp] = location
+        }
+    }
+
+    saveWarps(plugin)
 
 }
 
+fun saveWarps(plugin: Gamemode4Core) {
+    val warpsFile = File("${plugin.dataFolder}/warps.yml")
+    val warpsData = YamlConfiguration.loadConfiguration(warpsFile)
+
+    warpsData.set("warps",null)
+
+    WarpCommand.warps.forEach { (warp, location) ->
+        warpsData.set("warps.$warp",location)
+    }
+
+    warpsData.save(warpsFile)
+}
 

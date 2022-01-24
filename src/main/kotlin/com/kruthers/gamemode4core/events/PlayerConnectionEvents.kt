@@ -4,10 +4,7 @@ import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.modes.ModMode
 import com.kruthers.gamemode4core.modes.StreamerMode
 import com.kruthers.gamemode4core.modes.Watching
-import com.kruthers.gamemode4core.utils.getMessage
-import com.kruthers.gamemode4core.utils.loadPlayerData
-import com.kruthers.gamemode4core.utils.parseString
-import com.kruthers.gamemode4core.utils.playerHasData
+import com.kruthers.gamemode4core.utils.*
 import net.md_5.bungee.api.ChatColor
 import org.bukkit.Bukkit
 import org.bukkit.Location
@@ -123,15 +120,30 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
 
                     if (!Gamemode4Core.modModeBossBar.players.contains(player)) {
                         try {
-                            Gamemode4Core.modModeBossBar.players.add(player)
+                            Gamemode4Core.modModeBossBar.addPlayer(player)
                         } catch (e: Exception) {
-                            player.sendMessage(parseString("{prefix} ${ChatColor.RED}Failed to add player to boss bar",plugin))
+                            player.sendMessage(parseString("{prefix} ${ChatColor.RED}Failed to add player to boss bar. Please report the following to kruthers\n $e",plugin))
+                            plugin.logger.warning("Failed to add ${player.name} to the mod-mode boss bar: ${e.stackTrace}")
                         }
                     }
+
+                    val group: String? = plugin.config.getString("mod_mode.group")
+                    Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+                        if(!Gamemode4Core.permission.playerInGroup(player,group)) {
+                            playerAddGroup(player, group)
+                        }
+                    })
 
                 } else {
                     ModMode.disable(plugin,player,playerData)
                 }
+            } else {
+                val group: String? = plugin.config.getString("mod_mode.group")
+                Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
+                    if(!Gamemode4Core.permission.playerInGroup(player,group)) {
+                        playerRemoveGroup(player, group)
+                    }
+                })
             }
 
             //watch mode
@@ -163,6 +175,11 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
     @EventHandler
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player: Player = event.player
+
+        //remove the player from any boss bars
+        if (Gamemode4Core.modModeBossBar.players.contains(player)) {
+            Gamemode4Core.modModeBossBar.removePlayer(player)
+        }
 
         //checks if the player is being watched
         if (Gamemode4Core.watchingPlayers.values.contains(player.uniqueId)) {

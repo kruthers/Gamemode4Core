@@ -18,16 +18,10 @@ class BackCommand(val plugin: Gamemode4Core): CommandExecutor {
         if (sender is Player) {
             val player: Player = sender
 
-            val playerData: YamlConfiguration = loadPlayerData(plugin, player)
-            if (playerData.getString("mode.current") != "none") {
-                player.sendMessage("${ChatColor.RED}Sorry you cant use tpa when in a mode currently, try using build mode and normal tping")
-                return true
-            }
-
             when (args.size) {
                 0 -> {
                     var locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
-                    if (locations == null) {
+                    if (locations == null || locations.isEmpty()) {
                         player.sendMessage("${ChatColor.RED}You have no where to return too")
                     } else {
                         val location: Location = locations[0]

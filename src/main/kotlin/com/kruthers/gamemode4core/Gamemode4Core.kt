@@ -3,9 +3,10 @@ package com.kruthers.gamemode4core
 import com.kruthers.gamemode4core.commands.*
 import com.kruthers.gamemode4core.commands.tabcompleaters.*
 import com.kruthers.gamemode4core.events.*
-import com.kruthers.gamemode4core.objects.Whitelist
 import com.kruthers.gamemode4core.utils.configVersionCheck
 import com.kruthers.gamemode4core.utils.initStorageFolders
+import com.kruthers.gamemode4core.utils.loadWarps
+import net.luckperms.api.LuckPerms
 import net.md_5.bungee.api.ChatColor
 import net.milkbowl.vault.permission.Permission
 import org.bukkit.Bukkit
@@ -14,48 +15,33 @@ import org.bukkit.NamespacedKey
 import org.bukkit.boss.BarColor
 import org.bukkit.boss.BarStyle
 import org.bukkit.boss.BossBar
-import org.bukkit.command.CommandExecutor
 import org.bukkit.entity.Player
 import org.bukkit.plugin.PluginManager
 import org.bukkit.plugin.RegisteredServiceProvider
 import org.bukkit.plugin.java.JavaPlugin
-import org.dynmap.DynmapAPI
 import java.util.*
-import kotlin.collections.HashMap
 
-class Gamemode4Core(): JavaPlugin() {
 
-    /** TODO
-     * - Track watch targets
-     */
+class Gamemode4Core : JavaPlugin() {
 
     companion object {
         var playersFrozen: Boolean = false
-        val whitelists: HashMap<String, Whitelist> = HashMap()
         val watchingPlayers: HashMap<Player,UUID> = HashMap();
         val backLocations: HashMap<UUID,MutableList<Location>> = HashMap()
-
-        var activeWhitelist: String = ""
 
         lateinit var modModeBossBar: BossBar
 
         lateinit var permission: Permission
-        lateinit var dynmapAPI: DynmapAPI
+        lateinit var luckPermsAPI: LuckPerms
 
-        var dynmap: Boolean = false
         var placeholder: Boolean = false;
+        var luckperms: Boolean = false;
     }
 
     override fun onEnable() {
         this.logger.info("Enabling Gamemode 4 Core by kruthers")
         this.logger.info("Loading Required Dependencies")
         val pluginManager: PluginManager = this.getServer().getPluginManager();
-        this.logger.info("Loading ProtocolLib")
-        if (pluginManager.getPlugin("ProtocolLib") == null) {
-            this.logger.severe("Failed to load required dependency, ProtocolLib")
-            server.pluginManager.disablePlugin(this)
-            return
-        }
         this.logger.info("Loading Vault")
         if (!setupVaultPermissions()) {
             this.logger.severe("Failed to load required dependency, Vault")
@@ -64,14 +50,15 @@ class Gamemode4Core(): JavaPlugin() {
         }
 
         this.logger.info("Loading optional depedencies")
-        if (pluginManager.getPlugin("Dynmap") != null) {
-            this.logger.info("Found dynmap, hooking into it.")
-            dynmapAPI = pluginManager.getPlugin("Dynmap") as DynmapAPI
-            dynmap = true
-        }
         if (pluginManager.getPlugin("PlaceholderAPI") != null) {
             this.logger.info("Loading PlaceholderAPI hooks")
             placeholder = true
+        }
+        val lpProvider = Bukkit.getServicesManager().getRegistration(LuckPerms::class.java)
+        if (lpProvider != null) {
+            this.logger.info("Loading LuckPerms hooks")
+            luckPermsAPI = lpProvider.provider
+            luckperms = true
         }
 
         this.logger.info("Loading config...")
@@ -80,6 +67,7 @@ class Gamemode4Core(): JavaPlugin() {
         configVersionCheck(this,config)
 
         this.saveConfig()
+        loadWarps(this)
 
         this.logger.info("Config successfully loaded, loading in all data files...")
         if (!initStorageFolders(this)) {
@@ -88,17 +76,14 @@ class Gamemode4Core(): JavaPlugin() {
             return
         }
 
-//        loadWhitelists(this)
-
         this.logger.info("Loaded data files, loading in scoreboard & bossbars...")
         modModeBossBar = Bukkit.getServer().createBossBar(NamespacedKey.fromString("mode_mode",this)!!,"${ChatColor.GREEN}${ChatColor.BOLD}Mod Mode is engaged",BarColor.YELLOW,BarStyle.SOLID)
         modModeBossBar.isVisible = true;
         modModeBossBar.progress = 1.0
 
         this.logger.info("Loaded scoreboard and bossbar data, registering commands...")
-        val comingSoon: CommandExecutor = ComingSoon();
+//        val comingSoon = ComingSoon();
         this.server.getPluginCommand("gamemode4core")?.setExecutor( CoreCommand(this) )
-        this.server.getPluginCommand("whitelist")?.setExecutor( comingSoon ) //TODO
         this.server.getPluginCommand("streammode")?.setExecutor( StreamerModeCommand(this) )
         this.server.getPluginCommand("modmode")?.setExecutor( ModModeCommand(this) )
         this.server.getPluginCommand("watch")?.setExecutor( WatchCommand(this) )
@@ -108,11 +93,12 @@ class Gamemode4Core(): JavaPlugin() {
         this.server.getPluginCommand("back")?.setExecutor( BackCommand(this) )
         this.server.getPluginCommand("freeze")?.setExecutor( FreezeCommand(this) )
         this.server.getPluginCommand("unfreeze")?.setExecutor( UnFreezeCommand(this) )
+        this.server.getPluginCommand("warp")?.setExecutor(WarpCommand(this))
+        this.server.getPluginCommand("managewarp")?.setExecutor(ManageWarpsCommand(this))
 
         this.logger.info("All Commands registered, loading tab completer's")
-        val nullTabCompleter: NullTabCompleter = NullTabCompleter()
+        val nullTabCompleter = NullTabCompleter()
         this.server.getPluginCommand("gamemode4core")?.tabCompleter = CoreCommandTabCompleter()
-//        this.server.getPluginCommand("whitelist")?.tabCompleter = WhitelistTabCompleter()
         this.server.getPluginCommand("streammode")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("modmode")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("watch")?.tabCompleter = WatchTabCompleter()
@@ -123,6 +109,8 @@ class Gamemode4Core(): JavaPlugin() {
 //        this.server.getPluginCommand("forward")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("freeze")?.tabCompleter = nullTabCompleter
         this.server.getPluginCommand("unfreeze")?.tabCompleter = nullTabCompleter
+        this.server.getPluginCommand("warp")?.tabCompleter = WarpTabCompleter()
+        this.server.getPluginCommand("managewarp")?.tabCompleter = ManageWarpTabCompleter()
 
         this.logger.info("Loaded all tab completer's, registering events...")
         this.server.pluginManager.registerEvents(PlayerConnectionEvents(this), this)
@@ -155,4 +143,18 @@ class Gamemode4Core(): JavaPlugin() {
         permission = rsp.provider
         return true
     }
+
+    fun addTPALocation(player: Player) {
+        var locations: MutableList<Location> = backLocations[player.uniqueId] ?: mutableListOf()
+
+        locations.add(0,player.location)
+
+        if (locations.size > this.config.getInt("stored_locations.back")) {
+            locations = locations.subList(0,this.config.getInt("stored_locations.back"))
+        }
+
+        backLocations[player.uniqueId] = locations
+
+    }
+
 }
