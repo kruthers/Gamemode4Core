@@ -20,7 +20,7 @@ class UnwatchCommand(val plugin: Gamemode4Core): CommandExecutor {
 
                 if (playerData.getBoolean("mode.watching")) {
 
-                    Watching.disable(plugin, player, playerData)
+                    Watching.disable(plugin, player, playerData, true)
 
                 } else {
                     player.sendMessage("${ChatColor.RED}You must be watching someone to be able to unwatch")

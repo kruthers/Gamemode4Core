@@ -29,7 +29,7 @@ class WatchConfirmCommand(val plugin: Gamemode4Core): CommandExecutor {
 
                     if (target == null) {
                         player.sendMessage("${ChatColor.RED}Unable to locate target, exiting watch mode")
-                        Watching.disable(plugin, player, playerData)
+                        Watching.disable(plugin, player, playerData, true)
                     } else {
                         if (target.isOnline) {
                             target.player?.let { player.teleport(it.location) }
