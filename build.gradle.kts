@@ -6,21 +6,37 @@ plugins {
 
 group = "com.kruthers"
 version = "2.2.3"
+description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
+
+    implementation("net.kyori","adventure-platform-bukkit","4.0.1")
+
     compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+
+    implementation("cloud.commandframework","cloud-core","1.6.2")
+    implementation("cloud.commandframework","cloud-annotations","1.6.2")
+    implementation("cloud.commandframework","cloud-paper","1.6.2")
+    implementation("cloud.commandframework","cloud-minecraft-extras","1.6.2")
+
+    compileOnly("me.clip","placeholderapi","2.11.1")
+    compileOnly("net.luckperms","api","5.4")
+
 }
 
 tasks {
     shadowJar {
         dependencies {
             exclude(dependency("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"))
+            exclude(dependency("me.clip:placeholderapi:2.11.1"))
+            exclude(dependency("net.luckperms:api:5.4"))
         }
     }
     build {

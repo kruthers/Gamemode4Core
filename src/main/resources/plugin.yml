@@ -1,13 +1,12 @@
-name: ${project.artifactId}
-version: ${project.version}
+name: Gamemode4Core
+version: 2.4
 main: com.kruthers.gamemode4core.Gamemode4Core
 api-version: 1.16
 author: kruthers
-description: ${project.description}
+description: The core plugin used to manage the gamemode 4 public server
 depend:
-  - Vault
+  - LuckPerms
 softdepend:
-  - Dynmap
   - PlaceholderAPI
 permissions:
   gm4core.default:
@@ -16,18 +15,6 @@ permissions:
   gm4core.reload:
     default: false
     description: Used to reload the plugin
-  gm4core.whitelist:
-    default: false
-    description: Used for basic managment of the whitelist command
-  gm4core.whitelist.players:
-    default: false
-    description: used to add/ remove people from a whitelist
-  gm4core.whitelist.manage:
-    default: false
-    description: used to add/ remove whitelists
-  gm4core.whitelist.enable:
-    default: false
-    description: Used to set the active whitelist
   gm4core.mode.streamer:
     default: op
     description: Allows you to go into streamer mode and disable notifcations
