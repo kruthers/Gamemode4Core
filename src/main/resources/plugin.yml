@@ -11,13 +11,10 @@ softdepend:
 permissions:
   gm4core.default:
     default: true
-    description: used to run the default command
+    description: Base permission ued for core command
   gm4core.reload:
     default: false
     description: Used to reload the plugin
-  gm4core.mode.streamer:
-    default: op
-    description: Allows you to go into streamer mode and disable notifcations
   gm4core.mode.watch:
     default: op
     description: Allows you to go into streamer mode and disable notifcations
@@ -32,11 +29,6 @@ permissions:
   gm4core.tpa.back:
     default: op
     description: go back to privous locations
-    children:
-      - gm4core.tpa
-  gm4core.tpa.forward:
-    default: op
-    description: go forward to a back location
     children:
       - gm4core.tpa
   gm4core.freeze:
@@ -54,71 +46,6 @@ permissions:
     default: op
     children:
       - gm4core.warp
-commands:
-  gamemode4core:
-    description: Core command for the plugin
-    usage: /<command> <reload|rules|info>
-    aliases:
-      - gm4
-      - gm4core
-  streammode:
-    description: Used to hide all staff notifcations
-    usage: /<command>
-    permission: gm4core.mode.streamer
-    aliases:
-      - streamermode
-  modmode:
-    description: Used to enter moderation mode and gain world edit perms
-    usage: /<command>
-    permission: gm4core.mode.mod
-    aliases:
-      - buildmode
-  watch:
-    description: Used to teleport to a player and go into spectator mode
-    usage: /<command> <player>
-    permission: gm4core.mode.watch
-    aliases:
-      - owo
-  watchconfirm:
-    description: Used to teleport to the currently watched player
-    usage: /<command>
-    permission: gm4core.mode.watch
-    aliases:
-      - wc
-  unwatch:
-    description: Used to unwatch a player if you are watching them
-    usage: /<command>
-    permission: gm4core.mode.watch
-    aliases:
-      - uwu
-  tpa:
-    description: tpa to locations and remeber your to history
-    usage: /<command> <location>
-    permission: gm4core.tpa
-  back:
-    description: Go back to your privous location
-    usage: /<command> [count]
-    permission: gm4core.tpa.back
-  freeze:
-    description: Freeze everyone on the server for a set time
-    usage: /<command>
-    permission: gm4core.freeze
-  unfreeze:
-    description: Unfreeze everyone
-    usage: /<command>
-    permission: gm4core.freeze
-  warp:
-    description: warp to a location
-    usage: /<command> [warp]
-    permission: gm4core.warp
-    aliases:
-      - warps
-  managewarp:
-    description: manage warps
-    usage: /<command>
-    permission: gm4core.warp.manage
-    aliases:
-      - addwarp
-      - setwarp
-      - removewarp
-      - modifywarp
+  gm4core.griefwarning:
+    default: op
+    description: Warns when a attempted grief has occured

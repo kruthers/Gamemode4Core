@@ -2,8 +2,9 @@ package com.kruthers.gamemode4core.modes
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.*
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Bukkit
-import org.bukkit.ChatColor
 import org.bukkit.GameMode
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -13,7 +14,7 @@ class ModMode {
 
     companion object {
         fun toggle(plugin: Gamemode4Core, player: Player) {
-            var playerData: YamlConfiguration = loadPlayerData(plugin, player)
+            val playerData: YamlConfiguration = loadPlayerData(plugin, player)
             val inMode: Boolean = playerData.getBoolean("mode.mod_mode")
 
             if (inMode) {
@@ -58,7 +59,7 @@ class ModMode {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                 if (!playerAddGroup(player, group)) {
                     plugin.logger.warning("Failed to add $group to ${player.name}, while entering mod mode, they will be missing extra perms")
-                    player.sendMessage("${ChatColor.RED}Failed to setup permissions for mod mode, please exit and try again, if this continues contact your system admin")
+                    player.sendMessage(Component.text("Failed to setup permissions for mod mode, please exit and try again, if this continues contact your system admin", NamedTextColor.RED))
                 }
             })
 
@@ -113,7 +114,7 @@ class ModMode {
             Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
                 if (!playerRemoveGroup(player, group)) {
                     plugin.logger.warning("Failed to remove $group from ${player.name}, while exiting mod mode.")
-                    player.sendMessage("${ChatColor.RED}Failed to remove permissions for mod mode. This means the group has been removed already or has changed names, if this happens again please inform your system admin")
+                    player.sendMessage(Component.text("Failed to remove permissions for mod mode. This means the group has been removed already or has changed names, if this happens again please inform your system admin", NamedTextColor.RED))
                 }
             })
 

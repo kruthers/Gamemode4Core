@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kruthers"
-version = "2.2.3"
+version = "2.3.0"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
@@ -33,16 +33,24 @@ dependencies {
 
 tasks {
     shadowJar {
+        destinationDirectory.set(file("build"))
+
+        archiveClassifier.set("")
+
         dependencies {
             exclude(dependency("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"))
             exclude(dependency("me.clip:placeholderapi:2.11.1"))
             exclude(dependency("net.luckperms:api:5.4"))
         }
+
+        minimize()
     }
     build {
         dependsOn(shadowJar)
+
     }
 }
+
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(17))

@@ -4,6 +4,8 @@ import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.getMessage
 import com.kruthers.gamemode4core.utils.getPlayerDataFile
 import com.kruthers.gamemode4core.utils.loadPlayerData
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.GameMode
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
@@ -40,7 +42,8 @@ class Watching {
             player.teleport(target.location)
 
             //message
-            player.sendMessage(getMessage(plugin,"watch.start",player).replace("{target}",target.name))
+            player.sendMessage(getMessage(plugin,"watch.start",player,
+                TagResolver.resolver(Placeholder.unparsed("target",target.name))))
 
             //save data
             playerData.save(getPlayerDataFile(plugin, player))

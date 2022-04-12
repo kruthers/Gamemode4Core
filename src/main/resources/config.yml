@@ -1,6 +1,5 @@
 # ######### #
 # Gamemode 4 Core
-# Version ${project.version} #
 # by kruthers
 # ######### #
 # query kruthers#7770 on discord for any config help
@@ -22,8 +21,9 @@ scoreboard:
   tracked: []
 server_config:
   motd: |
-    &b&lGamemode 4 &7- &6&lPublic Server &c[1.16.5]
-    &2     Now Open to the public! &3Come Play!
+    <aqua><bold>Gamemode 4</bold></aqua> <gray>- <gold><bold>Public Server</bold> <red>[1.16.5]
+    <dark_green>     Now Open to the public! <dark_aqua>Come Play!
+  max_players: 20
 dim_sleep_bug:
   fix: true
   no_sleep_skip:
@@ -32,33 +32,39 @@ dim_sleep_bug:
     - world
     - world_2
 messages:
-  prefix: '&3[&bGM4&3]&7'
-  default_not_whitelisted: 'Sorry you are not whitelist on this server'
+  prefix: '<dark_aqua>[<aqua>GM4</aqua>]</dark_aqua>'
+  staff_prefix: '<yellow>[STAFF]</yellow>'
+  info: |
+    <aqua>Welcome to Gamemode 4!</aqua>
+    <grey>Gamemode 4 is a collection of datapacks that change and modify the gameplay experience
+    You can find out more on our website <color:#f563ff><u><hover:show_text:'<grey>https://gm4.co</grey>'><click:open_url:'https://gm4.co'>here</click></hover></u></color> & on our wiki: <color:#f563ff><u><hover:show_text:'<grey>https://wiki.gm4.co/wiki/Public_Server</grey>'><click:open_url:'https://wiki.gm4.co/wiki/Public_Server'>here</click></hover></u></color></grey>
   freeze:
     start_brodcast: |
-      &8------- &4Warning &8-------
-      &3Everyone has been temporarily frozen in place to help the staff resolve an issue.
-      &bPlease be patient and remain still while the issue is being resolved
-      &8------- ------ -------
+      <dark_gray>------- <dark_red>Warning</dark_red> -------</dark_gray>
+      <dark_aqua>Everyone has been temporarily frozen in place to help the staff resolve an issue.</dark_aqua>
+      <aqua>Please be patient and remain still while the issue is being resolved</aqua>
+      <dark_gray>------- ------ -------</dark_gray>
     end_brodcast: |
-      &8------- &2Warning &8-------
-      &3Everyone has been release, you are free to move arround again
-      &bPlease be carefull and report any issues
-      &8------- ------ -------'
-    staff_start: '&e[STAFF] &b{name} &6Has frozen everyone in place, run /unfreeze to release them'
-    staff_end: '&e[STAFF] &b{name} &6Has unfrozen everyone'
-    fozen: '{prefix} &cSorry you cant move while all players are frozen. Please stand still while the mods work to resolve the issue'
+      <dark_gray>------- <dark_green>Warning</dark_green> -------</dark_gray>
+      <dark_aqua>veryone has been release, you are free to move arround again</dark_aqua>
+      <aqua>Please be carefull and report any issues</aqua>
+      <dark_gray>------- ------ -------</dark_gray>
+    staff_start: '<staff_prefix> <aqua><name></aqua> <gold>Has frozen everyone in place, run /unfreeze to release them'
+    staff_end: '<staff_prefix> <aqua><name></aqua> <gold>Has unfrozen everyone'
+    fozen: '<prefix> <red>Sorry you cant move while all players are frozen. Please stand still while the mods work to resolve the issue'
   mod_mode:
-    enter: '{prefix} &aSuccessfully entered into moderation mode'
-    exit: '{prefix} &aExciting moderation mode...'
-    join: '{prefix} &6Reminder: you are currently in moderation mode and have your staff inventory'
+    enter: '<prefix> <green>Successfully entered into moderation mode'
+    exit: '<prefix> <green>Exciting moderation mode...'
+    join: '<prefix> <gold>Reminder: you are currently in moderation mode and have your staff inventory'
   watch:
-    start: '{prefix} &aYou are now watching &3{target}'
-    stop: '{prefix} &aYou are no longer watching anyone'
-    dimension_change: '{prefix} &3{target} &5Has changed dimension do &d/watchconfirm &5to follow them'
-    join: '{prefix} &cYou are currently set to be watching &3{target}'
-    logout: '{prefix} Your target has left the game, you will be able to tp when they log back in'
+    start: '<prefix> <green>You are now watching <dark_aqua><target>'
+    stop: '<prefix> <green>You are no longer watching anyone'
+    dimension_change: '<prefix> <dark_aqua><target></dark_aqua> <dark_purple>Has changed dimension do <light_purple>/watchconfirm</light_purple> to follow them'
+    join: '<prefix> <red>You are currently set to be watching <dark_aqua><target>'
+    logout: '<prefix> <grey>Your target has left the game, you will be able to tp when they log back in'
+    not_online: '<prefix> <red>Your target is currently not online so can not be teleported too'
+    not_watching: '<prefix> <red>You must be watching someone to execute this command'
   streammode:
-    enter: '{prefix} &cYou are now in streamer mode and will not receive staff notifications, run &4/streammode &cto exit'
-    exit: '{prefix} &aYou are no longer in streamer mode and will receive staff notifications. &lMake sure you are not currently showing you chat to non staff members. &aTo enter it again run &2/streammode'
-    join: '{prefix} &6Reminder: you are currently in streamer mode so will not receive staff notifications. it is staff to allow non-staff to see your chat'
+    enter: '<prefix> <red>You are now in streamer mode and will not receive staff notifications, run <dark_red>/streammode</dark_red> to exit'
+    exit: '<prefix> <green>You are no longer in streamer mode and will receive staff notifications. <bold>Make sure you are not currently showing you chat to non staff members.</bold> To enter it again run <dark_green>/streammode'
+    join: '<prefix> <gold>Reminder: you are currently in streamer mode so will not receive staff notifications. it is staff to allow non-staff to see your chat'

@@ -55,13 +55,13 @@ private fun generateBlankPlayerData(): YamlConfiguration {
     blankData.set("mode.mod_mode",false)
     blankData.set("mode.watching",false)
 
-    return blankData;
+    return blankData
 }
 
 private fun updatePlayerDataFile(plugin: Gamemode4Core,playerDataFile: File) {
     val playerData: YamlConfiguration = YamlConfiguration.loadConfiguration(playerDataFile)
 
-    val newPlayerData: YamlConfiguration = generateBlankPlayerData();
+    val newPlayerData: YamlConfiguration = generateBlankPlayerData()
 
     if (playerData.getString("mode.current") == "build") {
         //old shared data
@@ -101,11 +101,10 @@ fun configVersionCheck(plugin: Gamemode4Core,config: FileConfiguration) {
             plugin.logger.warning("Outdated config version detected: $version")
             if (version < 1) {
                 plugin.logger.warning("Found an outdated config file, updating")
-                val playerDataFolder: File = File("${plugin.dataFolder}/player_data/")
-                val files = playerDataFolder.listFiles();
+                val playerDataFolder = File("${plugin.dataFolder}/player_data/")
 
-                files.forEach { file ->
-                    updatePlayerDataFile(plugin,file)
+                playerDataFolder.listFiles()?.forEach { file ->
+                    updatePlayerDataFile(plugin, file)
                 }
             }
         }

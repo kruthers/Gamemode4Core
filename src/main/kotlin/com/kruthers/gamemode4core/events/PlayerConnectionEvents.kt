@@ -5,7 +5,12 @@ import com.kruthers.gamemode4core.modes.ModMode
 import com.kruthers.gamemode4core.modes.StreamerMode
 import com.kruthers.gamemode4core.modes.Watching
 import com.kruthers.gamemode4core.utils.*
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
+import net.kyori.adventure.title.Title
+import net.kyori.adventure.title.TitlePart
 import org.bukkit.Bukkit
 import org.bukkit.Location
 import org.bukkit.OfflinePlayer
@@ -20,6 +25,7 @@ import org.bukkit.event.player.PlayerQuitEvent
 import org.bukkit.scoreboard.Objective
 import org.bukkit.scoreboard.Score
 import java.lang.Exception
+import java.time.Duration
 import java.util.*
 
 class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
@@ -53,12 +59,12 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
 
     @EventHandler
     fun onPlayerJoin(event: PlayerJoinEvent) {
-        val player: Player = event.player;
+        val player: Player = event.player
 
         //Gives them a tag containing there current username to monitor for changes
         if (!player.hasPlayedBefore()) {
             // player has not played before so just gives them the tag it will also handel first join events
-            val location: Location = getConfigSpawn(plugin);
+            val location: Location = getConfigSpawn(plugin)
             player.setBedSpawnLocation(location,true)
             player.teleport(location)
 
@@ -66,7 +72,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
 
         } else {
             //player has played before to searches there tags to try and find the saved username
-            var username: String = ""
+            var username = ""
             player.scoreboardTags.forEach {
                 val found = usernameRegex.find(it)
                 if (found!=null) {
@@ -89,7 +95,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                     //Now will parse all the scoreboards that are tracked and copy the scores over
                     val scoreboards: MutableList<String> = plugin.config.getStringList("scoreboard.tracked")
                     scoreboards.forEach {
-                        val scoreboard: Objective? = Bukkit.getServer().scoreboardManager?.mainScoreboard?.getObjective(it)
+                        val scoreboard: Objective? = Bukkit.getServer().scoreboardManager.mainScoreboard.getObjective(it)
                         val score: Score? = scoreboard?.getScore(username)
                         score?.score.also { scoreboard?.getScore(player.name)?.score = it as Int }
                     }
@@ -122,15 +128,17 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                         try {
                             Gamemode4Core.modModeBossBar.addPlayer(player)
                         } catch (e: Exception) {
-                            player.sendMessage(parseString("{prefix} ${ChatColor.RED}Failed to add player to boss bar. Please report the following to kruthers\n $e",plugin))
+                            player.sendMessage(parseString("<prefix> <red>Failed to add player to boss bar. Please report the following to kruthers</red><newline><grey>$e</grey>",plugin))
                             plugin.logger.warning("Failed to add ${player.name} to the mod-mode boss bar: ${e.stackTrace}")
                         }
                     }
 
                     val group: String? = plugin.config.getString("mod_mode.group")
                     Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-                        if(!Gamemode4Core.permission.playerInGroup(player,group)) {
-                            playerAddGroup(player, group)
+                        if (!playerAddGroup(player, group)) {
+                            player.sendMessage(
+                                Component.text("Unable to add you to mod-mode group. Your still in mod mode though.", NamedTextColor.RED)
+                            )
                         }
                     })
 
@@ -140,8 +148,10 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             } else {
                 val group: String? = plugin.config.getString("mod_mode.group")
                 Bukkit.getScheduler().runTaskAsynchronously(plugin, Runnable {
-                    if(!Gamemode4Core.permission.playerInGroup(player,group)) {
-                        playerRemoveGroup(player, group)
+                    if (!playerRemoveGroup(player, group)) {
+                        player.sendMessage(
+                            Component.text("Unable to remove mod-mode group", NamedTextColor.RED)
+                        )
                     }
                 })
             }
@@ -154,7 +164,10 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                     if (target == null) {
                         Watching.disable(plugin, player, playerData)
                     } else {
-                        player.sendMessage(getMessage(plugin, "watch.join").replace("{target}",target.name?:"null"))
+                        player.sendMessage(mm.deserialize(
+                            mm.serialize(getMessage(plugin, "watch.join")),
+                            Placeholder.parsed("target",target.name?:"unknown")
+                        ))
                         Gamemode4Core.watchingPlayers[player] = target.uniqueId
                     }
                 } else {
@@ -165,8 +178,15 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
 
         // If the server is in freeze mode it will send a message informing them
         if (Gamemode4Core.playersFrozen) {
-            event.player.sendMessage("${ChatColor.AQUA}Everyone is currently frozen while the mods resolve an issue, please stand still")
-            event.player.sendTitle("${ChatColor.AQUA}Everyone is currently frozen while the mods resolve an issue, please stand still","",0,200,20)
+            event.player.sendMessage(Component.text("Everyone is currently frozen while the mods resolve an issue, please stand still",NamedTextColor.AQUA))
+            event.player.sendTitlePart(
+                TitlePart.TIMES,
+                Title.Times.times(Duration.ZERO, Duration.ofSeconds(5), Duration.ofSeconds(1))
+            )
+            event.player.sendTitlePart(
+                TitlePart.TITLE,
+                Component.text("Everyone is currently frozen while the mods resolve an issue, please stand still",NamedTextColor.AQUA)
+            )
         }
 
     }
@@ -186,7 +206,8 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             // if they are it will send a message to the watcher informing them
             Gamemode4Core.watchingPlayers.forEach { watcher, target ->
                 if (target == player.uniqueId) {
-                    watcher.sendMessage(getMessage(plugin,"watch.logout",watcher).replace("{target}",player.name))
+                    watcher.sendMessage(getMessage(plugin,"watch.logout",watcher,
+                        TagResolver.resolver(Placeholder.unparsed("target",player.name))))
                 }
             }
         }

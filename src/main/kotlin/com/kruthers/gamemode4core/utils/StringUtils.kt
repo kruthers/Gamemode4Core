@@ -2,52 +2,70 @@ package com.kruthers.gamemode4core.utils
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import me.clip.placeholderapi.PlaceholderAPI
-import net.md_5.bungee.api.ChatColor
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
-import kotlin.math.floor
 
-fun parseString(string: String, plugin: Gamemode4Core): String {
-    var parsed: String = string.replace("{online}", Bukkit.getOnlinePlayers().toString())
-    parsed = parsed.replace("{max}", plugin.config.getInt("server_config.max_players").toString())
+val mm = MiniMessage.miniMessage()
 
-    parsed = parsed.replace("{prefix}",plugin.config.getString("messages.prefix").toString())
+fun parseString(string: String, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component {
 
+    val placeholders: TagResolver = TagResolver.resolver(
+        tags,
+        Placeholder.parsed("online",Bukkit.getOnlinePlayers().toString()),
+        Placeholder.parsed("max",plugin.config.getInt("server_config.max_players").toString()),
+        Placeholder.parsed("prefix",plugin.config.getString("messages.prefix") ?: "<aqua>GM4<aqua>"),
+        Placeholder.parsed("staff_prefix",plugin.config.getString("messages.staff_prefix") ?: "<gold>[STAFF]</gold>")
+    )
 
-    parsed = ChatColor.translateAlternateColorCodes('&',parsed)
-    return parsed
+    return mm.deserialize(string,placeholders)
 }
 
-fun parsePlayerString(string: String, player: Player, plugin: Gamemode4Core): String {
+fun parseString(string: String, player: Player, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component {
 
-    var parsed: String = string.replace("{player}", player.name)
-    parsed = parsed.replace("{name}", player.name)
+    val placeholders: TagResolver = TagResolver.resolver(
+        tags,
+        Placeholder.parsed("player",player.name),
+        Placeholder.parsed("name",player.name),
+        Placeholder.parsed("display_name",mm.serialize(player.displayName()))
+    )
 
-    parsed = parseString(parsed, plugin)
+    var input = string
 
     if (Gamemode4Core.placeholder) {
-        parsed = PlaceholderAPI.setPlaceholders(player,parsed)
+        input = PlaceholderAPI.setPlaceholders(player,input)
     }
 
-    return parsed
+    return parseString(input, plugin, placeholders)
 }
 
-fun getMessage(plugin: Gamemode4Core, location: String): String {
+fun getMessage(plugin: Gamemode4Core, location: String, tags: TagResolver = TagResolver.empty()): Component {
     val message: String? = plugin.config.getString("messages.$location")
 
     return if (message == null) {
-        "${ChatColor.RED}Error in parsing message: Failed to find message"
+        Component.text("Error in parsing message: ",NamedTextColor.RED)
+            .append(Component.text(" Failed to find message messages:", NamedTextColor.GRAY))
+            .append(Component.newline())
+            .append(Component.text(location,NamedTextColor.GRAY,TextDecoration.ITALIC))
     } else {
-        parseString(message,plugin)
+        parseString(message,plugin, tags)
     }
 }
 
-fun getMessage(plugin: Gamemode4Core, location: String, player: Player): String {
+fun getMessage(plugin: Gamemode4Core, location: String, player: Player, tags: TagResolver = TagResolver.empty()): Component {
     val message: String? = plugin.config.getString("messages.$location")
 
     return if (message == null) {
-        "${ChatColor.RED}Error in parsing message: Failed to find message messages.$location"
+        Component.text("Error in parsing message: ",NamedTextColor.RED)
+            .append(Component.text(" Failed to find message messages:", NamedTextColor.GRAY))
+            .append(Component.newline())
+            .append(Component.text(location,NamedTextColor.GRAY,TextDecoration.ITALIC))
     } else {
-        parsePlayerString(message, player, plugin)
+        parseString(message, player, plugin, tags)
     }
 }

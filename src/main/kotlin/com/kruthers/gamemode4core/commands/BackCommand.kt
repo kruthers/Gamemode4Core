@@ -1,77 +1,48 @@
 package com.kruthers.gamemode4core.commands
 
+import cloud.commandframework.annotations.Argument
+import cloud.commandframework.annotations.CommandDescription
+import cloud.commandframework.annotations.CommandMethod
+import cloud.commandframework.annotations.CommandPermission
 import com.kruthers.gamemode4core.Gamemode4Core
-import com.kruthers.gamemode4core.utils.getMessage
-import com.kruthers.gamemode4core.utils.loadPlayerData
-import org.bukkit.ChatColor
+import com.kruthers.gamemode4core.utils.parseString
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import org.bukkit.Location
-import org.bukkit.command.Command
-import org.bukkit.command.CommandExecutor
-import org.bukkit.command.CommandSender
-import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
-import java.lang.NumberFormatException
-import java.util.*
 
-class BackCommand(val plugin: Gamemode4Core): CommandExecutor {
-    override fun onCommand(sender: CommandSender, command: Command, label: String, args: Array<out String>): Boolean {
-        if (sender is Player) {
-            val player: Player = sender
+class BackCommand(val plugin: Gamemode4Core) {
 
-            when (args.size) {
-                0 -> {
-                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
-                    if (locations == null || locations.isEmpty()) {
-                        player.sendMessage("${ChatColor.RED}You have no where to return too")
-                    } else {
-                        val location: Location = locations[0]
-
-                        player.teleport(location)
-                        val remaining: Int = removeLocations(player,1)
-                        player.sendMessage("${ChatColor.AQUA}Returned to your last location, you have $remaining locations left")
-                    }
-                }
-                1 -> {
-                    var locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
-                    if (locations == null) {
-                        player.sendMessage("${ChatColor.RED}You have no where to return too")
-                    } else {
-                        val steps: Int
-
-                        try {
-                            steps = args[0].toInt()
-                        } catch (e: NumberFormatException) {
-                            player.sendMessage("${ChatColor.RED}Invalid number given expected /back <count>")
-                            return true
-                        }
-
-                        //get the locations
-                        val location: Location = if (steps > locations.size) {
-                            locations[locations.size-1]
-                        } else {
-                            locations[steps-1]
-                        }
-
-                        player.teleport(location)
-                        val remaining: Int = removeLocations(player,steps)
-
-                        player.sendMessage("${ChatColor.AQUA}Returned to the location, you have $remaining locations left")
-
-                    }
-                }
-                else -> player.sendMessage("${ChatColor.RED}Too many arguments given, correct usage: /back <count>")
-            }
-
-        } else {
-            sender.sendMessage("${ChatColor.RED}You must be a player to run this command")
+    @CommandMethod("back [count]")
+    @CommandDescription("Go back to your privous location")
+    @CommandPermission("gm4core.tpa.back")
+    fun onBackCommand(player: Player, @Argument("count") countInput: Int?) {
+        val locations: MutableList<Location>? = Gamemode4Core.backLocations[player.uniqueId]
+        var count: Int = countInput?: 1
+        if (count < 1) {
+            player.sendMessage(Component.text("Expected minimum count greater then 0, defaulted to 1",NamedTextColor.RED))
+            count = 1
         }
 
-        return true
+        if (locations == null || locations.isEmpty()) {
+            player.sendMessage("<prefix> <red>You have no where to return too")
+        } else {
+            //get the location to return to
+            val location: Location = if (count > locations.size) {
+                locations[locations.size-1]
+            } else {
+                locations[count-1]
+            }
+
+            player.teleport(location)
+            val remaining: Int = removeLocations(player,count)
+            player.sendMessage(parseString("<prefix> <red>Returned to the location, you have $remaining locations left",plugin))
+        }
+
     }
 
     private fun removeLocations(player: Player, count: Int): Int {
         var locations: MutableList<Location> = Gamemode4Core.backLocations[player.uniqueId] ?: mutableListOf()
-
 
         val remaining: Int = locations.size - count
         if (remaining < 1) {
