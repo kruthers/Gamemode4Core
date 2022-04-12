@@ -162,7 +162,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                     val target: OfflinePlayer? = playerData.getString("storage.watching.target")?.let { Bukkit.getOfflinePlayer(UUID.fromString(it)) }
 
                     if (target == null) {
-                        Watching.disable(plugin, player, playerData)
+                        Watching.disable(plugin, player, playerData, true)
                     } else {
                         player.sendMessage(mm.deserialize(
                             mm.serialize(getMessage(plugin, "watch.join")),

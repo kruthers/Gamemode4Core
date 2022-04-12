@@ -79,7 +79,7 @@ class ModMode {
             var playerData: YamlConfiguration = pd
             //disabling watching
             if (playerData.getBoolean("mode.watching")){
-                playerData = Watching.disable(plugin, player, playerData)
+                playerData = Watching.disable(plugin, player, playerData, false)
             }
 
             // save mode inventory
