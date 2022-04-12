@@ -40,7 +40,7 @@ class WatchCommands(val plugin: Gamemode4Core) {
             }
 
             if (target == null) {
-                Watching.disable(plugin, player, playerData)
+                Watching.disable(plugin, player, playerData, true)
                 player.sendMessage(parseString("<prefix> <red>Unable to locate target disabling watch mode",plugin))
             } else {
                 if (target.isOnline) {
@@ -62,7 +62,7 @@ class WatchCommands(val plugin: Gamemode4Core) {
     fun onUnwatchCommand(player: Player) {
         val playerData: YamlConfiguration = loadPlayerData(plugin, player)
         if (playerData.getBoolean("mode.watching")) {
-            Watching.disable(plugin, player, playerData)
+            Watching.disable(plugin, player, playerData, true)
         } else {
             player.sendMessage(getMessage(plugin,"watch.not_watching",player))
         }
