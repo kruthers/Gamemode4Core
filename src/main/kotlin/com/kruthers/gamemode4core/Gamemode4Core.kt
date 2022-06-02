@@ -120,7 +120,7 @@ class Gamemode4Core : JavaPlugin() {
         annotationParser.parse(WarpCommand(this))
         annotationParser.parse(ManageWarpsCommand(this))
 
-        this.logger.info("Loaded all tab completer's, registering events...")
+        this.logger.info("Loaded all tab completers, registering events...")
         this.server.pluginManager.registerEvents(PlayerConnectionEvents(this), this)
         this.server.pluginManager.registerEvents(PlayerFrozenEvents(this), this)
         this.server.pluginManager.registerEvents(DimensionEvents(this), this)

@@ -72,7 +72,7 @@ class ManageWarpsCommand(val plugin: Gamemode4Core) {
 
     @ProxiedBy("warps")
     @CommandMethod("managewarps lists")
-    @CommandDescription("Remove a warp")
+    @CommandDescription("List all warps")
     @CommandPermission("gm4core.warp")
     fun onWarpListCommand(sender: CommandSender) {
         WarpCommand.sendWarpsList(sender,plugin)
@@ -82,7 +82,6 @@ class ManageWarpsCommand(val plugin: Gamemode4Core) {
     @Parser(name = "warpNameAdd")
     fun warpNameParser(sender: CommandContext<CommandSender>, inputQueue: Queue<String>): String {
         val input = inputQueue.remove()
-        sender.sender.sendMessage(input)
 
         if (input.matches("[\\w\\-]{3,}".toRegex()) && input.lowercase() != "list") {
             return  input

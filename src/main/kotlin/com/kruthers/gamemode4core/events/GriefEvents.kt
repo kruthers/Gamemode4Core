@@ -12,6 +12,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityPlaceEvent
+import org.bukkit.event.player.PlayerBucketEmptyEvent
 
 class GriefEvents(val plugin: Gamemode4Core): Listener {
     private val warningTime: Int = 60*60*20
@@ -68,5 +69,26 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
                 }
             }
         }
+    }
+
+    @EventHandler
+    fun onBucketEmpty(event: PlayerBucketEmptyEvent) {
+
+        if (event.player.getStatistic(Statistic.PLAY_ONE_MINUTE) < (warningTime/2)) {
+            when (event.bucket) {
+                Material.LAVA_BUCKET -> {
+                    event.isCancelled = true
+                    val loc = event.block.location
+                    Bukkit.broadcast(parseString("<staff_prefix> <player> <red>Attempted to place lava " +
+                            "at <u><click:suggest_command:'/tpa l ${loc.x} ${loc.y} ${loc.z}'>" +
+                            "${loc.x} ${loc.y} ${loc.z}</click></u>", event.player, plugin))
+                    kickPlayer(event.player)
+                }
+                else -> {
+                    return
+                }
+            }
+        }
+
     }
 }
