@@ -61,13 +61,4 @@ class TpaCommand(val plugin: Gamemode4Core) {
         )
     }
 
-    @Parser(name = "tpaLocation")
-    fun parseTpaLocation(sender: CommandContext<CommandSender>, inputQueue: Queue<String>): Location {
-        val input = inputQueue.remove()
-        sender.sender.sendMessage("Got '$input' as fist input")
-
-        throw Exception("Unable to pass")
-    }
-
-
 }
