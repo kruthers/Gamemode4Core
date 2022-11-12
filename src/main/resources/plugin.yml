@@ -6,6 +6,8 @@ author: kruthers
 description: The core plugin used to manage the gamemode 4 public server
 depend:
   - LuckPerms
+  - BanManager
+  - DiscordSRV
 softdepend:
   - PlaceholderAPI
 permissions:
@@ -49,3 +51,9 @@ permissions:
   gm4core.griefwarning:
     default: op
     description: Warns when a attempted grief has occured
+  gm4core.warnings:
+    default: true
+    description: Lists all your warnings
+  gm4core.warnings.others:
+    default: op
+    description: Lists other players warnings

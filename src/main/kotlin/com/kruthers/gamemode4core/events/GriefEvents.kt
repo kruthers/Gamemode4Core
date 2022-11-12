@@ -2,8 +2,18 @@ package com.kruthers.gamemode4core.events
 
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.parseString
+import github.scarsz.discordsrv.DiscordSRV
+import github.scarsz.discordsrv.dependencies.jda.api.EmbedBuilder
+import github.scarsz.discordsrv.dependencies.jda.api.entities.TextChannel
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.event.ClickEvent
+import net.kyori.adventure.text.event.HoverEvent
+import net.kyori.adventure.text.format.NamedTextColor
+import net.kyori.adventure.text.format.TextDecoration
+import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder
+import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
+import org.bukkit.Location
 import org.bukkit.Material
 import org.bukkit.Statistic
 import org.bukkit.entity.EntityType
@@ -13,31 +23,66 @@ import org.bukkit.event.Listener
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityPlaceEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
+import java.awt.Color
 
 class GriefEvents(val plugin: Gamemode4Core): Listener {
-    private val warningTime: Int = 60*60*20
+    private val warningTime: Long = 60*60*20
     private val blockedBlocks: MutableList<Material> = mutableListOf(Material.TNT,Material.FIRE,Material.LAVA,
         Material.WITHER_SKELETON_SKULL,Material.WITHER_SKELETON_WALL_SKULL)
 
-    fun kickPlayer(player: Player) {
-        player.kick(Component.text("An unknown GM4 exception occurred"))
+    private val kickMessages: MutableList<String> = mutableListOf(
+        "Internal exception: java.io.IOException: Received string length longer than the maximum allowed (257>256)",
+        "Internal Server Error",
+        "Internal exception: java.io.IOException: An existing connection was forcibly closed by the remote host",
+        "Internal exception: java.io.IOException: GM4 encountered an unknown error"
+    )
+
+    private fun checkPlayTime(player: Player, checkTime: Long = this.warningTime): Boolean {
+        return player.getStatistic(Statistic.PLAY_ONE_MINUTE) < checkTime
+    }
+
+    private fun sendWarning(player: Player, warning: String, loc: Location) {
+        val tags: TagResolver = TagResolver.resolver(
+            Placeholder.unparsed("warning", warning),
+            Placeholder.component(
+                "location",
+                Component.text("${loc.x} ${loc.y} ${loc.z}").decorate(TextDecoration.UNDERLINED).clickEvent(
+                    ClickEvent.runCommand("/tpa l ${loc.x} ${loc.y} ${loc.z}")
+                ).hoverEvent(HoverEvent.showText(
+                    Component.text("Teleport to where the entry was logged")
+                        .color(NamedTextColor.GRAY)
+                        .decorate(TextDecoration.ITALIC)
+                ))
+            )
+        )
+
+        //send message to the server
+        Bukkit.broadcast(
+            parseString("<staff_prefix> <player> <red><warning> at <location>", player, plugin, tags),
+            "gm4core.griefwarning"
+        )
+        //send discord message
+        val logChannel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("grief-log")
+        if (logChannel != null) {
+            val embed = EmbedBuilder()
+            embed.setTitle("Possible grief attempt detected")
+            embed.setDescription("`${player.name}` $warning at ${loc.x} ${loc.y} ${loc.z}")
+            embed.setColor(Color.RED)
+
+            plugin.logger.info("$logChannel ${embed.build()}")
+
+            logChannel.sendMessageEmbeds(embed.build()).queue()
+        }
+
+        //kick the player with a random message
+        player.kick(Component.text(kickMessages.random()))
     }
 
     @EventHandler
     fun onBlockPlaceEvent(event: BlockPlaceEvent) {
-        if (event.player.getStatistic(Statistic.PLAY_ONE_MINUTE) < warningTime) {
-            if (blockedBlocks.contains(event.block.type)) {
-                event.isCancelled = true
-
-                val loc = event.block.location
-
-                Bukkit.broadcast(parseString("<staff_prefix> <player> <red>tried to place down " +
-                        "${event.block.type.name} at <u><click:suggest_command:'/tpa l ${loc.x} ${loc.y} ${loc.z}'>" +
-                        "${loc.x} ${loc.y} ${loc.z}</click></u>", event.player, plugin))
-                kickPlayer(event.player)
-            }
-
-
+        if (checkPlayTime(event.player) && blockedBlocks.contains(event.block.type)) {
+            event.isCancelled = true
+            sendWarning(event.player,"tried to place down ${event.block.type.name}",event.block.location)
         }
     }
 
@@ -46,23 +91,15 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
         if (event.player == null) return
 
         val player: Player = event.player!!
-        if (player.getStatistic(Statistic.PLAY_ONE_MINUTE) < warningTime) {
+        if (checkPlayTime(player)) {
             when (event.entityType) {
                 EntityType.MINECART_TNT -> {
                     event.isCancelled = true
-                    val loc = event.entity.location
-                    Bukkit.broadcast(parseString("<staff_prefix> <player> <red>Attempted to spawn a TNT Minecart " +
-                            "at <u><click:suggest_command:'/tpa l ${loc.x} ${loc.y} ${loc.z}'>" +
-                            "${loc.x} ${loc.y} ${loc.z}</click></u>", player, plugin))
-                    kickPlayer(player)
+                    sendWarning(player,"Attempted to spawn a TNT minecart",event.entity.location)
                 }
                 EntityType.PRIMED_TNT -> {
                     event.isCancelled = true
-                    val loc = event.entity.location
-                    Bukkit.broadcast(parseString("<staff_prefix> <player> <red>Attempted to ignite a TNT " +
-                            "at <u><click:suggest_command:'/tpa l ${loc.x} ${loc.y} ${loc.z}'>" +
-                            "${loc.x} ${loc.y} ${loc.z}</click></u>", player, plugin))
-                    kickPlayer(player)
+                    sendWarning(player,"Attempted to ignite TNT",event.entity.location)
                 }
                 else -> {
                     return
@@ -73,21 +110,9 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
 
     @EventHandler
     fun onBucketEmpty(event: PlayerBucketEmptyEvent) {
-
-        if (event.player.getStatistic(Statistic.PLAY_ONE_MINUTE) < (warningTime/2)) {
-            when (event.bucket) {
-                Material.LAVA_BUCKET -> {
-                    event.isCancelled = true
-                    val loc = event.block.location
-                    Bukkit.broadcast(parseString("<staff_prefix> <player> <red>Attempted to place lava " +
-                            "at <u><click:suggest_command:'/tpa l ${loc.x} ${loc.y} ${loc.z}'>" +
-                            "${loc.x} ${loc.y} ${loc.z}</click></u>", event.player, plugin))
-                    kickPlayer(event.player)
-                }
-                else -> {
-                    return
-                }
-            }
+        if (checkPlayTime(event.player,warningTime/2) && event.bucket == Material.LAVA_BUCKET) {
+            event.isCancelled = true
+            sendWarning(event.player,"Attempted to place lava",event.block.location)
         }
 
     }

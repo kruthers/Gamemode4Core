@@ -1,33 +1,36 @@
 plugins {
-    kotlin("jvm") version "1.6.10"
-    id("com.github.johnrengelman.shadow") version "7.1.0"
+    kotlin("jvm") version "1.7.20"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 
 }
 
 group = "com.kruthers"
-version = "2.4.2"
+version = "2.5.0"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
     mavenCentral()
     maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
     maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
+    maven { url = uri("https://nexus.scarsz.me/content/groups/public/") }
 }
 
 dependencies {
     implementation(kotlin("stdlib"))
 
-    implementation("net.kyori","adventure-platform-bukkit","4.0.1")
+    implementation("net.kyori:adventure-api:4.11.0")
 
-    compileOnly("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
 
-    implementation("cloud.commandframework","cloud-core","1.6.2")
-    implementation("cloud.commandframework","cloud-annotations","1.6.2")
-    implementation("cloud.commandframework","cloud-paper","1.6.2")
-    implementation("cloud.commandframework","cloud-minecraft-extras","1.6.2")
+    implementation("cloud.commandframework","cloud-core","1.7.1")
+    implementation("cloud.commandframework","cloud-annotations","1.7.1")
+    implementation("cloud.commandframework","cloud-paper","1.7.1")
+    implementation("cloud.commandframework","cloud-minecraft-extras","1.7.1")
 
     compileOnly("me.clip","placeholderapi","2.11.1")
     compileOnly("net.luckperms","api","5.4")
+    compileOnly("me.confuser.banmanager:BanManagerCommon:7.9.0")
+    compileOnly("com.discordsrv:discordsrv:1.26.0")
 
 }
 
@@ -41,6 +44,8 @@ tasks {
             exclude(dependency("io.papermc.paper:paper-api:1.18.2-R0.1-SNAPSHOT"))
             exclude(dependency("me.clip:placeholderapi:2.11.1"))
             exclude(dependency("net.luckperms:api:5.4"))
+            exclude(dependency("me.confuser.banmanager:BanManagerCommon:7.9.0"))
+            exclude(dependency("com.discordsrv:discordsrv:1.26.0"))
         }
 
         minimize()

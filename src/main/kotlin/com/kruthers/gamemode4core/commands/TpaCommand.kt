@@ -4,11 +4,16 @@ import cloud.commandframework.annotations.Argument
 import cloud.commandframework.annotations.CommandDescription
 import cloud.commandframework.annotations.CommandMethod
 import cloud.commandframework.annotations.CommandPermission
+import cloud.commandframework.annotations.ProxiedBy
+import cloud.commandframework.annotations.parsers.Parser
+import cloud.commandframework.context.CommandContext
 import com.kruthers.gamemode4core.Gamemode4Core
 import com.kruthers.gamemode4core.utils.parseString
 import org.bukkit.Location
 import org.bukkit.World
+import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.util.*
 
 class TpaCommand(val plugin: Gamemode4Core) {
 
@@ -20,6 +25,7 @@ class TpaCommand(val plugin: Gamemode4Core) {
         player.teleport(location)
     }
 
+    @ProxiedBy("tpal")
     @CommandMethod("tpa l <location> [dimension]")
     @CommandDescription("tpa to locations and remembers your to current location")
     @CommandPermission("gm4core.tpa")
@@ -38,6 +44,7 @@ class TpaCommand(val plugin: Gamemode4Core) {
         )
     }
 
+    @ProxiedBy("tpap")
     @CommandMethod("tpa p <player>")
     @CommandDescription("tpa to a player and remembers your to current location")
     @CommandPermission("gm4core.tpa")
@@ -52,6 +59,14 @@ class TpaCommand(val plugin: Gamemode4Core) {
                     "to your previous location.", plugin
             )
         )
+    }
+
+    @Parser(name = "tpaLocation")
+    fun parseTpaLocation(sender: CommandContext<CommandSender>, inputQueue: Queue<String>): Location {
+        val input = inputQueue.remove()
+        sender.sender.sendMessage("Got '$input' as fist input")
+
+        throw Exception("Unable to pass")
     }
 
 
