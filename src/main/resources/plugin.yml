@@ -1,5 +1,5 @@
 name: Gamemode4Core
-version: 2.4
+version: '${version}'
 main: com.kruthers.gamemode4core.Gamemode4Core
 api-version: 1.16
 author: kruthers
