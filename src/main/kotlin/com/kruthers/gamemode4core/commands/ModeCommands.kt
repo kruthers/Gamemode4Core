@@ -19,7 +19,7 @@ class ModeCommands(val plugin:Gamemode4Core) {
         StreamerMode.toggle(plugin, player)
     }
 
-    @CommandMethod("modmode")
+    @CommandMethod("modmode|buildmode")
     @CommandPermission("gm4core.mode.mod")
     @CommandDescription("Used to enter moderation mode and gain world edit perms")
     fun onModMoeCommand(player: Player) {

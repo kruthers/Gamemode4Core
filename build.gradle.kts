@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kruthers"
-version = "2.5.0"
+version = "2.5.2"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
@@ -52,7 +52,9 @@ tasks {
     }
     build {
         dependsOn(shadowJar)
-
+    }
+    processResources {
+        expand("name" to project.name, "description" to project.description, "version" to project.version)
     }
 }
 

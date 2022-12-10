@@ -10,21 +10,21 @@ import org.bukkit.command.CommandSender
 
 class CoreCommand(val plugin: Gamemode4Core) {
 
-    @CommandMethod("gamemode4core")
+    @CommandMethod("gamemode4core|gm4core|gm4")
     @CommandPermission("gm4core.default")
     @CommandDescription("Core command for the plugin")
     fun onCoreCommand(sender: CommandSender) {
         sender.sendMessage(getMessage(plugin,"info"))
     }
 
-    @CommandMethod("gamemode4core info")
+    @CommandMethod("gamemode4core|gm4core|gm4 info")
     @CommandPermission("gm4core.default")
     @CommandDescription("Core command for the plugin")
     fun onInfoCommand(sender: CommandSender) {
         sender.sendMessage(getMessage(plugin,"info"))
     }
 
-    @CommandMethod("gamemode4core reload")
+    @CommandMethod("gamemode4core|gm4core|gm4 reload")
     @CommandPermission("gm4core.reload")
     @CommandDescription("Reload the plugin plugin")
     fun onReloadCommand(sender: CommandSender) {
