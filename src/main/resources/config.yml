@@ -31,6 +31,11 @@ dim_sleep_bug:
   keep_time_in_sync:
     - world
     - world_2
+donor_tagging:
+  groups:
+    - patreon
+    - donor
+  tag: donor
 messages:
   prefix: '<dark_aqua>[<aqua>GM4</aqua>]</dark_aqua>'
   staff_prefix: '<yellow>[STAFF]</yellow>'

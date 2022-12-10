@@ -129,6 +129,7 @@ class Gamemode4Core : JavaPlugin() {
         this.server.pluginManager.registerEvents(PlayerRespawnEvent(this),this)
         this.server.pluginManager.registerEvents(TimeEvents(this),this)
         this.server.pluginManager.registerEvents(GriefEvents(this),this)
+        PermissionEvent(this, luckPermsAPI)
 
         this.logger.info("Loaded events")
         this.server.consoleSender.sendMessage("${ChatColor.GREEN}Gamemode 4 Core is now loaded in and ready to go")
