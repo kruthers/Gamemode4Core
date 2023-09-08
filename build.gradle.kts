@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kruthers"
-version = "2.6.2"
+version = "2.7.0"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
