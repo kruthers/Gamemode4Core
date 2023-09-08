@@ -5,6 +5,7 @@ api-version: 1.16
 author: kruthers
 description: The core plugin used to manage the gamemode 4 public server
 depend:
+  - PandaLib
   - LuckPerms
   - BanManager
   - DiscordSRV

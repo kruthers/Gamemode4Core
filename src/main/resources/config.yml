@@ -59,7 +59,7 @@ messages:
     fozen: '<prefix> <red>Sorry you cant move while all players are frozen. Please stand still while the mods work to resolve the issue'
   mod_mode:
     enter: '<prefix> <green>Successfully entered into moderation mode'
-    exit: '<prefix> <green>Exciting moderation mode...'
+    exit: '<prefix> <green>Exiting moderation mode...'
     join: '<prefix> <gold>Reminder: you are currently in moderation mode and have your staff inventory'
   watch:
     start: '<prefix> <green>You are now watching <dark_aqua><target>'

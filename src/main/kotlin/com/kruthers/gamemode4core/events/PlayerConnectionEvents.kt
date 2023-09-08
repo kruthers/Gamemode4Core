@@ -103,7 +103,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             }
 
             //check roles for donor roles
-            Bukkit.getScheduler().runTask(this.plugin, Runnable {
+            Bukkit.getScheduler().runTaskLater(this.plugin, Runnable {
                 val user = Gamemode4Core.luckPermsAPI.userManager.loadUser(player.uniqueId).get()
                 val groups = this.plugin.config.getStringList("donor_tagging.groups")
                 var isDonor = false
@@ -120,7 +120,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                 } else {
                     player.scoreboardTags.remove(tag)
                 }
-            })
+            }, 1)
         }
 
 

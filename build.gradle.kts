@@ -1,31 +1,32 @@
 plugins {
-    kotlin("jvm") version "1.7.20"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-
+    kotlin("jvm") version "1.9.0"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
+    id("xyz.jpenilla.run-paper") version "2.1.0"
 }
 
 group = "com.kruthers"
-version = "2.6.0"
+version = "2.6.2"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
     mavenCentral()
-    maven { url = uri("https://repo.extendedclip.com/content/repositories/placeholderapi/") }
-    maven { url = uri("https://papermc.io/repo/repository/maven-public/") }
-    maven { url = uri("https://nexus.scarsz.me/content/groups/public/") }
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+    maven("https://papermc.io/repo/repository/maven-public/")
+    maven("https://nexus.scarsz.me/content/groups/public/")
 }
 
 dependencies {
-    implementation(kotlin("stdlib"))
+    compileOnly(kotlin("stdlib"))
 
-    implementation("net.kyori:adventure-api:4.11.0")
+    compileOnly("net.kyori:adventure-api:4.11.0")
 
-    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
 
-    implementation("cloud.commandframework","cloud-core","1.7.1")
-    implementation("cloud.commandframework","cloud-annotations","1.7.1")
-    implementation("cloud.commandframework","cloud-paper","1.7.1")
-    implementation("cloud.commandframework","cloud-minecraft-extras","1.7.1")
+    val cloudVersion = "1.8.3"
+    compileOnly("cloud.commandframework","cloud-core",cloudVersion)
+    compileOnly("cloud.commandframework","cloud-annotations",cloudVersion)
+    compileOnly("cloud.commandframework","cloud-paper",cloudVersion)
+    compileOnly("cloud.commandframework","cloud-minecraft-extras",cloudVersion)
 
     compileOnly("me.clip","placeholderapi","2.11.1")
     compileOnly("net.luckperms","api","5.4")
@@ -55,6 +56,10 @@ tasks {
     }
     processResources {
         expand("name" to project.name, "description" to project.description, "version" to project.version)
+    }
+    runServer {
+        dependsOn("build")
+        minecraftVersion("1.20.1")
     }
 }
 
