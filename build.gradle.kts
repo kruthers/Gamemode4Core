@@ -1,11 +1,11 @@
 plugins {
-    kotlin("jvm") version "1.9.0"
+    kotlin("jvm") version "1.9.22"
     id("com.github.johnrengelman.shadow") version "8.1.1"
     id("xyz.jpenilla.run-paper") version "2.1.0"
 }
 
 group = "com.kruthers"
-version = "2.7.0"
+version = "2.7.1"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
@@ -18,11 +18,11 @@ repositories {
 dependencies {
     compileOnly(kotlin("stdlib"))
 
-    compileOnly("net.kyori:adventure-api:4.11.0")
+    compileOnly("net.kyori:adventure-api:4.15.0")
 
-    compileOnly("io.papermc.paper:paper-api:1.20.1-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
 
-    val cloudVersion = "1.8.3"
+    val cloudVersion = "1.8.4"
     compileOnly("cloud.commandframework","cloud-core",cloudVersion)
     compileOnly("cloud.commandframework","cloud-annotations",cloudVersion)
     compileOnly("cloud.commandframework","cloud-paper",cloudVersion)
