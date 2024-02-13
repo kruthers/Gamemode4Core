@@ -21,6 +21,7 @@ class WatchCommands(val plugin: Gamemode4Core) {
     fun onWatchCommand(player: Player, @Argument("player") target: Player) {
         if (player.name == target.name) {
             player.sendMessage(parseString("<prefix> <red>You are unable to watch yourself",plugin))
+            return
         }
 
         Watching.enable(plugin, player, target)

@@ -39,6 +39,10 @@ class Watching {
 
             //teleport to target and set gamemode
             player.gameMode = GameMode.SPECTATOR
+
+            // check if spectating inside someone
+            player.spectatorTarget?.let { player.spectatorTarget = null }
+
             player.teleport(target.location)
 
             //message
