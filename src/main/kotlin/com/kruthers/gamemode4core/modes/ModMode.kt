@@ -9,6 +9,7 @@ import org.bukkit.GameMode
 import org.bukkit.configuration.file.YamlConfiguration
 import org.bukkit.entity.Player
 import org.bukkit.inventory.ItemStack
+import org.bukkit.potion.PotionEffect
 
 class ModMode {
 
@@ -43,6 +44,7 @@ class ModMode {
             playerData.set("storage.mod_mode.normal_data.inventory",player.inventory.contents)
             playerData.set("storage.mod_mode.normal_data.gamemode",player.gameMode.name)
             playerData.set("storage.mod_mode.normal_data.location",player.location)
+            playerData.set("storage.mod_mode.normal_data.effects",player.activePotionEffects)
 
             //Load in mode inv, set gamemode and give them there perms
             player.inventory.clear()
@@ -51,6 +53,18 @@ class ModMode {
                     player.inventory.setItem(index,it)
                 }
             }
+
+            // Clear potion effect
+            for (effect in player.activePotionEffects) {
+                player.removePotionEffect(effect.type)
+            }
+
+            // Load their build mode effects
+            playerData.getList("storage.mod_mode.build_data.effects")?.forEachIndexed { index, it ->
+                if (it is PotionEffect)
+                    player.addPotionEffect(it)
+            }
+
 
             player.gameMode = GameMode.CREATIVE
 
@@ -85,6 +99,7 @@ class ModMode {
             // save mode inventory
             playerData.set("mode.mod_mode",false)
             playerData.set("storage.mod_mode.build_data.inventory",player.inventory.contents)
+            playerData.set("storage.mod_mode.build_data.effects",player.activePotionEffects)
 
             //load the players build mode data back in
             player.exp = playerData.getDouble("storage.mod_mode.normal_data.xp.points").toFloat()
@@ -93,7 +108,7 @@ class ModMode {
             playerData.getLocation("storage.mod_mode.normal_data.location")?.let { player.teleport(it) }
             playerData.getString("storage.mod_mode.normal_data.gamemode")?.let { player.gameMode = GameMode.valueOf(it) }
 
-            //load there inv back in
+            //load their inv back in
             player.inventory.clear()
             playerData.getList("storage.mod_mode.normal_data.inventory")?.forEachIndexed { index, it ->
                 if (it is ItemStack) {
@@ -107,6 +122,17 @@ class ModMode {
                 if (!storedLocations.isEmpty()) {
                     Gamemode4Core.backLocations[player.uniqueId] = mutableListOf()
                 }
+            }
+
+            // Clear potion effects
+            for (effect in player.activePotionEffects) {
+                player.removePotionEffect(effect.type)
+            }
+
+            // revert potion effects
+            playerData.getList("storage.mod_mode.normal_data.effects")?.forEachIndexed { index, it ->
+                if (it is PotionEffect)
+                player.addPotionEffect(it)
             }
 
             //remove permission group
