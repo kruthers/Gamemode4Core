@@ -60,7 +60,7 @@ class ModMode {
             }
 
             // Load their build mode effects
-            playerData.getList("storage.mod_mode.build_data.effects")?.forEachIndexed { index, it ->
+            playerData.getList("storage.mod_mode.build_data.effects")?.forEachIndexed { _, it ->
                 if (it is PotionEffect)
                     player.addPotionEffect(it)
             }
@@ -130,7 +130,7 @@ class ModMode {
             }
 
             // revert potion effects
-            playerData.getList("storage.mod_mode.normal_data.effects")?.forEachIndexed { index, it ->
+            playerData.getList("storage.mod_mode.normal_data.effects")?.forEachIndexed { _, it ->
                 if (it is PotionEffect)
                 player.addPotionEffect(it)
             }
