@@ -40,9 +40,13 @@ class Gamemode4Core : JavaPlugin() {
         lateinit var luckPermsAPI: LuckPerms
 
         var placeholder: Boolean = false
+
+        private lateinit var self: Gamemode4Core
+        val instance: Gamemode4Core get() = self
     }
 
     override fun onEnable() {
+        self = this
         this.logger.info("Enabling Gamemode 4 Core by kruthers")
         this.logger.info("Loading Required Dependencies")
         val pluginManager: PluginManager = this.server.pluginManager
@@ -81,19 +85,13 @@ class Gamemode4Core : JavaPlugin() {
         modModeBossBar.isVisible = true
         modModeBossBar.progress = 1.0
 
-        this.logger.info("Loaded scoreboard and bossbar data, loading commands...")
-        val cmdManager: PaperCommandManager<CommandSender> = PaperCommandManager<CommandSender>(
+        this.logger.info("Loaded scoreboard and boss bar data, loading commands...")
+        val cmdManager: PaperCommandManager<CommandSender> = PaperCommandManager(
             this,
             CommandExecutionCoordinator.simpleCoordinator(),
             Function.identity(),
             Function.identity()
         )
-
-        try {
-            cmdManager.registerBrigadier()
-        } catch (e: Exception) {
-            this.logger.warning("Failed to initialize Brigadier support: " + e.message)
-        }
 
         MinecraftExceptionHandler<CommandSender>()
             .withDefaultHandlers()
@@ -119,7 +117,16 @@ class Gamemode4Core : JavaPlugin() {
         annotationParser.parse(BackCommand(this))
         annotationParser.parse(WarpCommand(this))
         annotationParser.parse(ManageWarpsCommand(this))
-        annotationParser.parse(ModerationCommands(this))
+
+        //no more annotations
+        registerModerationCommands(cmdManager)
+
+
+        try {
+            cmdManager.registerBrigadier()
+        } catch (e: Exception) {
+            this.logger.warning("Failed to initialize Brigadier support: " + e.message)
+        }
 
         this.logger.info("Loaded all tab completers, registering events...")
         this.server.pluginManager.registerEvents(PlayerConnectionEvents(this), this)
@@ -131,18 +138,15 @@ class Gamemode4Core : JavaPlugin() {
         this.server.pluginManager.registerEvents(GriefEvents(this),this)
         PermissionEvent(this, luckPermsAPI)
 
-        this.logger.info("Loaded events")
-        this.server.consoleSender.sendMessage("${ChatColor.GREEN}Gamemode 4 Core is now loaded in and ready to go")
+        this.logger.info("Loaded events, GM4 Cores i now enabled")
 
+        self = this
     }
 
 
     override fun onDisable() {
         this.logger.info("Disabling Gamemode 4 core")
         Bukkit.getServer().removeBossBar(NamespacedKey.fromString("mode_mode",this)!!)
-
-
-        this.server.consoleSender.sendMessage("${ChatColor.RED}Gamemode 4 Core is now disabled")
     }
 
     private fun setupLuckPerms(): Boolean {
