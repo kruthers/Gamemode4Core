@@ -60,9 +60,10 @@ class ModMode {
             }
 
             // Load their build mode effects
-            playerData.getList("storage.mod_mode.build_data.effects")?.forEachIndexed { index, it ->
-                if (it is PotionEffect)
+            playerData.getList("storage.mod_mode.build_data.effects")?.forEach {
+                if (it is PotionEffect) {
                     player.addPotionEffect(it)
+                }
             }
 
 
@@ -130,9 +131,10 @@ class ModMode {
             }
 
             // revert potion effects
-            playerData.getList("storage.mod_mode.normal_data.effects")?.forEachIndexed { index, it ->
-                if (it is PotionEffect)
-                player.addPotionEffect(it)
+            playerData.getList("storage.mod_mode.normal_data.effects")?.forEach {
+                if (it is PotionEffect) {
+                    player.addPotionEffect(it)
+                }
             }
 
             //remove permission group
