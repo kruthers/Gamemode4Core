@@ -5,7 +5,7 @@ plugins {
 }
 
 group = "com.kruthers"
-version = "2.7.1"
+version = "2.7.2"
 description = "The core plugin used to manage the gamemode 4 public server"
 
 repositories {
@@ -59,7 +59,7 @@ tasks {
     }
     runServer {
         dependsOn("build")
-        minecraftVersion("1.20.1")
+        minecraftVersion("1.20.4")
     }
 }
 
