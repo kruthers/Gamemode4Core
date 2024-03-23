@@ -65,7 +65,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
         if (!player.hasPlayedBefore()) {
             // player has not played before so just gives them the tag it will also handel first join events
             val location: Location = getConfigSpawn(plugin)
-            player.setBedSpawnLocation(location,true)
+            player.setRespawnLocation(location,true)
             player.teleport(location)
 
             player.addScoreboardTag("${tagPrefix}username_${player.name}")
@@ -133,7 +133,7 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             //if stream mode is enabled it will send a reminder as long as they still have perms
             if (playerData.getBoolean("mode.streamer")) {
                 if (player.hasPermission("gm4core.mode.streamer")) {
-                    player.sendMessage(getMessage(plugin, "streammode.join"))
+                    player.sendMessage(getMessage("streammode.join"))
                 } else {
                     StreamerMode.toggle(plugin,player)
                 }
@@ -142,13 +142,13 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             //mod mode
             if (playerData.getBoolean("mode.mod_mode")) {
                 if (player.hasPermission("gm4core.mode.mod")) {
-                    player.sendMessage(getMessage(plugin, "mod_mode.join"))
+                    player.sendMessage(getMessage("mod_mode.join"))
 
                     if (!Gamemode4Core.modModeBossBar.players.contains(player)) {
                         try {
                             Gamemode4Core.modModeBossBar.addPlayer(player)
                         } catch (e: Exception) {
-                            player.sendMessage(parseString("<prefix> <red>Failed to add player to boss bar. Please report the following to kruthers</red><newline><grey>$e</grey>",plugin))
+                            player.sendMessage(parse("<prefix> <red>Failed to add player to boss bar. Please report the following to kruthers</red><newline><grey>$e</grey>"))
                             plugin.logger.warning("Failed to add ${player.name} to the mod-mode boss bar: ${e.stackTrace}")
                         }
                     }
@@ -215,6 +215,9 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
     fun onPlayerLeave(event: PlayerQuitEvent) {
         val player: Player = event.player
 
+        //make sure their inventory is restored
+        SpectatorInventorySyncEvents.restoreInventory(player)
+
         //remove the player from any boss bars
         if (Gamemode4Core.modModeBossBar.players.contains(player)) {
             Gamemode4Core.modModeBossBar.removePlayer(player)
@@ -225,8 +228,12 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
             // if they are it will send a message to the watcher informing them
             Gamemode4Core.watchingPlayers.forEach { watcher, target ->
                 if (target == player.uniqueId) {
-                    watcher.sendMessage(getMessage(plugin,"watch.logout",watcher,
-                        TagResolver.resolver(Placeholder.unparsed("target",player.name))))
+                    watcher.sendMessage(
+                        getMessage(
+                            "watch.logout", watcher,
+                            TagResolver.resolver(Placeholder.unparsed("target",player.name))
+                        )
+                    )
                 }
             }
         }

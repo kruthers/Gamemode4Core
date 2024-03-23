@@ -1,6 +1,7 @@
 package com.kruthers.gamemode4core.modes
 
 import com.kruthers.gamemode4core.Gamemode4Core
+import com.kruthers.gamemode4core.events.SpectatorInventorySyncEvents
 import com.kruthers.gamemode4core.utils.*
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -82,7 +83,7 @@ class ModMode {
             Gamemode4Core.modModeBossBar.addPlayer(player)
 
             //message
-            player.sendMessage(getMessage(plugin,"mod_mode.enter",player))
+            player.sendMessage(getMessage("mod_mode.enter", player))
 
             //save data
             playerData.save(getPlayerDataFile(plugin, player))
@@ -96,6 +97,9 @@ class ModMode {
             if (playerData.getBoolean("mode.watching")){
                 playerData = Watching.disable(plugin, player, playerData, false)
             }
+
+            //restore spectator inventories
+            SpectatorInventorySyncEvents.restoreInventory(player)
 
             // save mode inventory
             playerData.set("mode.mod_mode",false)
@@ -150,7 +154,7 @@ class ModMode {
             Gamemode4Core.modModeBossBar.removePlayer(player)
 
             //send message
-            player.sendMessage(getMessage(plugin,"mod_mode.exit",player))
+            player.sendMessage(getMessage("mod_mode.exit", player))
 
             //save data
             playerData.save(getPlayerDataFile(plugin, player))
