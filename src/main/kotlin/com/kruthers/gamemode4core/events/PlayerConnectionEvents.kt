@@ -184,10 +184,9 @@ class PlayerConnectionEvents(val plugin: Gamemode4Core): Listener {
                     if (target == null) {
                         Watching.disable(plugin, player, playerData, true)
                     } else {
-                        player.sendMessage(mm.deserialize(
-                            mm.serialize(getMessage(plugin, "watch.join")),
-                            Placeholder.parsed("target",target.name?:"unknown")
-                        ))
+                        player.sendMessage(
+                            getMessage("watch.join",Placeholder.parsed("target",target.name?:"unknown"))
+                        )
                         Gamemode4Core.watchingPlayers[player] = target.uniqueId
                     }
                 } else {

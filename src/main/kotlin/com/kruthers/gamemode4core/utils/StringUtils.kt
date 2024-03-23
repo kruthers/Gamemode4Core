@@ -11,9 +11,14 @@ import net.kyori.adventure.text.minimessage.tag.resolver.TagResolver
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
 
-val mm = MiniMessage.miniMessage()
+private val mm = MiniMessage.miniMessage()
 
-fun parseString(string: String, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component {
+@Deprecated("Plugin arg no longer required", ReplaceWith("parse(string, tags)"))
+fun parseString(string: String, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component =
+    parse(string, tags)
+
+fun parse(string: String, tags: TagResolver = TagResolver.empty()): Component {
+    val plugin = Gamemode4Core.instance
 
     val placeholders: TagResolver = TagResolver.resolver(
         tags,
@@ -26,7 +31,11 @@ fun parseString(string: String, plugin: Gamemode4Core, tags: TagResolver = TagRe
     return mm.deserialize(string,placeholders)
 }
 
-fun parseString(string: String, player: Player, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component {
+@Deprecated("Plugin arg no longer required", ReplaceWith("parse(string, player, tags)"))
+fun parseString(string: String, player: Player, plugin: Gamemode4Core, tags: TagResolver = TagResolver.empty()): Component =
+    parse(string, player, tags)
+
+fun parse(string: String, player: Player, tags: TagResolver = TagResolver.empty()): Component {
 
     val placeholders: TagResolver = TagResolver.resolver(
         tags,
@@ -35,17 +44,20 @@ fun parseString(string: String, player: Player, plugin: Gamemode4Core, tags: Tag
         Placeholder.parsed("display_name",mm.serialize(player.displayName()))
     )
 
-    var input = string
+    val input = if (Gamemode4Core.placeholder) {
+        PlaceholderAPI.setPlaceholders(player,string)
+    } else string
 
-    if (Gamemode4Core.placeholder) {
-        input = PlaceholderAPI.setPlaceholders(player,input)
-    }
-
-    return parseString(input, plugin, placeholders)
+    return parse(input, placeholders)
 }
 
-fun getMessage(plugin: Gamemode4Core, location: String, tags: TagResolver = TagResolver.empty()): Component {
-    val message: String? = plugin.config.getString("messages.$location")
+@Deprecated("Removed plugin argument", ReplaceWith("getMessage(location, tags)"))
+fun getMessage(plugin: Gamemode4Core, location: String, tags: TagResolver = TagResolver.empty()): Component =
+    getMessage(location, tags)
+
+
+fun getMessage(location: String, tags: TagResolver = TagResolver.empty()): Component {
+    val message: String? = Gamemode4Core.instance.config.getString("messages.$location")
 
     return if (message == null) {
         Component.text("Error in parsing message: ",NamedTextColor.RED)
@@ -53,12 +65,16 @@ fun getMessage(plugin: Gamemode4Core, location: String, tags: TagResolver = TagR
             .append(Component.newline())
             .append(Component.text(location,NamedTextColor.GRAY,TextDecoration.ITALIC))
     } else {
-        parseString(message,plugin, tags)
+        parse(message, tags)
     }
 }
 
-fun getMessage(plugin: Gamemode4Core, location: String, player: Player, tags: TagResolver = TagResolver.empty()): Component {
-    val message: String? = plugin.config.getString("messages.$location")
+@Deprecated("Removed plugin argument", ReplaceWith("getMessage(location, player, tags)"))
+fun getMessage(plugin: Gamemode4Core, location: String, player: Player, tags: TagResolver = TagResolver.empty()): Component =
+    getMessage(location, player, tags)
+
+fun getMessage(location: String, player: Player, tags: TagResolver = TagResolver.empty()): Component {
+    val message: String? = Gamemode4Core.instance.config.getString("messages.$location")
 
     return if (message == null) {
         Component.text("Error in parsing message: ",NamedTextColor.RED)
@@ -66,6 +82,6 @@ fun getMessage(plugin: Gamemode4Core, location: String, player: Player, tags: Ta
             .append(Component.newline())
             .append(Component.text(location,NamedTextColor.GRAY,TextDecoration.ITALIC))
     } else {
-        parseString(message, player, plugin, tags)
+        parse(message, player, tags)
     }
 }
