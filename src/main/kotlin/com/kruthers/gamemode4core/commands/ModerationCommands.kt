@@ -1,17 +1,11 @@
 package com.kruthers.gamemode4core.commands
 
 import cloud.commandframework.CommandManager
-import cloud.commandframework.annotations.*
-import cloud.commandframework.annotations.suggestions.Suggestions
-import cloud.commandframework.bukkit.parsers.OfflinePlayerArgument
 import cloud.commandframework.context.CommandContext
-import com.kruthers.gamemode4core.Gamemode4Core
+import com.kruthers.gamemode4core.commands.argument.CustomOfflinePlayerArg
 import com.kruthers.gamemode4core.utils.parse
-import com.kruthers.gamemode4core.utils.parseString
 import me.confuser.banmanager.common.api.BmAPI
 import net.kyori.adventure.text.Component
-import net.kyori.adventure.text.format.NamedTextColor
-import org.bukkit.Bukkit
 import org.bukkit.OfflinePlayer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
@@ -24,7 +18,7 @@ fun registerModerationCommands(manager: CommandManager<CommandSender>) {
         .permission("gm4core.warnings")
         .handler(::listOwnWarnings)
     ).command(base
-        .argument(OfflinePlayerArgument.of("player"))
+        .argument(CustomOfflinePlayerArg.of("player"))
         .permission("gm4core.warnings.others")
         .handler(::listOtherWarnings)
     )
