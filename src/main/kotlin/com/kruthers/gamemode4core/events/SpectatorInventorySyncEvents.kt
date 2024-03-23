@@ -23,6 +23,7 @@ class SpectatorInventorySyncEvents : Listener {
                 p.inventory.setItem(index, item)
             }
             spectateInventories.remove(p)
+            targets.remove(p)
         }
 
         fun saveInventory(p: Player) {
