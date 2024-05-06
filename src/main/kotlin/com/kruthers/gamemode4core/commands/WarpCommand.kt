@@ -27,13 +27,13 @@ class WarpCommand(val plugin: Gamemode4Core) {
             val warpsSize = warps.size
             var i = 0
             warps.forEach { (warp, _) ->
-                val text = MiniMessage.miniMessage().deserialize("<hover:show_text:'<dark_purple>Teleport to $warp" +
+                val text = MiniMessage.miniMessage().deserialize(" <hover:show_text:'<dark_purple>Teleport to $warp" +
                         "</dark_purple>'><click:run_command:'/warp $warp'><gold>$warp</gold></click></hover>")
 
                 warpsText = warpsText.append(text)
                 i++
                 if (i < warpsSize) {
-                    warpsText.append(Component.text(", ", NamedTextColor.GREEN))
+                    warpsText.append(Component.text(",", NamedTextColor.GREEN))
                 }
             }
 
