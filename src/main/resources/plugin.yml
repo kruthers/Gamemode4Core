@@ -14,13 +14,13 @@ softdepend:
 permissions:
   gm4core.default:
     default: true
-    description: Base permission ued for core command
+    description: Base permission used for core command
   gm4core.reload:
     default: false
     description: Used to reload the plugin
   gm4core.mode.watch:
     default: op
-    description: Allows you to go into streamer mode and disable notifcations
+    description: Allows you to go into streamer mode and disable notifications
     children:
       - gm4core.mode.mod
   gm4core.mode.mod:
@@ -31,7 +31,7 @@ permissions:
     description: tpa to locations or people
   gm4core.tpa.back:
     default: op
-    description: go back to privous locations
+    description: go back to previous locations
     children:
       - gm4core.tpa
   gm4core.freeze:
@@ -42,7 +42,7 @@ permissions:
     description: Bypass getting frozen
   gm4core.freeze.notify:
     default: op
-    description: Get notified seperatly when a freeze is started and of who started it
+    description: Get notified separately when a freeze is started and of who started it
   gm4core.warp:
     default: op
   gm4core.warp.manage:
@@ -51,7 +51,7 @@ permissions:
       - gm4core.warp
   gm4core.griefwarning:
     default: op
-    description: Warns when a attempted grief has occured
+    description: Warns when a attempted grief has occurred
   gm4core.warnings:
     default: true
     description: Lists all your warnings

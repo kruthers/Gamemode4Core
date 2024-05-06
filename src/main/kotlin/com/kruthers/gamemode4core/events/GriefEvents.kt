@@ -20,6 +20,7 @@ import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.block.BlockBreakEvent
 import org.bukkit.event.block.BlockPlaceEvent
 import org.bukkit.event.entity.EntityPlaceEvent
 import org.bukkit.event.player.PlayerBucketEmptyEvent
@@ -29,6 +30,9 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
     private val warningTime: Long = 60*60*20
     private val blockedBlocks: MutableList<Material> = mutableListOf(Material.TNT,Material.FIRE,Material.LAVA,
         Material.WITHER_SKELETON_SKULL,Material.WITHER_SKELETON_WALL_SKULL)
+    private val blockBrokenBlocks: MutableList<Material> = mutableListOf(Material.CHEST,Material.TRAPPED_CHEST,
+        Material.BARREL,Material.HOPPER,Material.DISPENSER,Material.DROPPER,
+        Material.CHEST_MINECART,Material.HOPPER_MINECART)
 
     private val kickMessages: MutableList<String> = mutableListOf(
         "Internal exception: java.io.IOException: Received string length longer than the maximum allowed (257>256)",
@@ -62,7 +66,7 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
             "gm4core.griefwarning"
         )
         //send discord message
-        val logChannel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("grief-log")
+        val logChannel: TextChannel? = DiscordSRV.getPlugin().getDestinationTextChannelForGameChannelName("grief-alerts")
         if (logChannel != null) {
             val embed = EmbedBuilder()
             embed.setTitle("Possible grief attempt detected")
@@ -83,6 +87,15 @@ class GriefEvents(val plugin: Gamemode4Core): Listener {
         if (checkPlayTime(event.player) && blockedBlocks.contains(event.block.type)) {
             event.isCancelled = true
             sendWarning(event.player,"tried to place down ${event.block.type.name}",event.block.location)
+        }
+    }
+
+    @EventHandler
+    fun onBlockBreakEvent(event: BlockBreakEvent) {
+        // Block container breaking for first 20 minutes
+        if (checkPlayTime(event.player, warningTime / 3) && blockBrokenBlocks.contains(event.block.type)) {
+            event.isCancelled = true
+            sendWarning(event.player, "tried to break ${event.block.type.name}",event.block.location)
         }
     }
 

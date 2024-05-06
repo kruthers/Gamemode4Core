@@ -51,8 +51,8 @@ messages:
       <dark_gray>------- ------ -------</dark_gray>
     end_brodcast: |
       <dark_gray>------- <dark_green>Warning</dark_green> -------</dark_gray>
-      <dark_aqua>veryone has been release, you are free to move arround again</dark_aqua>
-      <aqua>Please be carefull and report any issues</aqua>
+      <dark_aqua>Everyone has been released, you are free to move around again</dark_aqua>
+      <aqua>Please be careful and report any issues</aqua>
       <dark_gray>------- ------ -------</dark_gray>
     staff_start: '<staff_prefix> <aqua><name></aqua> <gold>Has frozen everyone in place, run /unfreeze to release them'
     staff_end: '<staff_prefix> <aqua><name></aqua> <gold>Has unfrozen everyone'
